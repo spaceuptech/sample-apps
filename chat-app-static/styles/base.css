@@ -1,0 +1,56 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Proxima Nova;
+}
+
+.form-input {
+    border: 1px solid #BDBDBD;
+    box-sizing: border-box;
+    border-radius: 4px;
+    height: 50px;
+    padding: 0;
+    width: 418px;
+    display: block;
+    background: no-repeat 20px center / 20px;
+    padding-left: 56px;
+    font-size: 16px;
+}
+
+.form-error {
+    display: block;
+    padding-left: 20px;
+    margin-top: 15px;
+    font-size: 16px;
+    line-height: 1;
+    color: #F5222D;
+}
+
+.form-error.hidden {
+    display: none;
+}
+
+.form-input[name="email"] {
+    background-image: url(/assets/icons/email.png);
+}
+
+.form-input[name=password] {
+    background-image: url(/assets/icons/lock.png);
+}
+
+.form-input[name=name] {
+    background-image: url(/assets/icons/name.png);
+}
+
+.form-submit {
+    width: 418px;
+    height: 50px;
+    background: #0063FF;
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+    outline: none;
+    border: none;
+    margin: auto;
+    display: block;
+    color: #fff;
+}

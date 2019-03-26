@@ -1,0 +1,51 @@
+.container {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+}
+
+.container-divider {
+    max-height: 554px;
+    height: 85vh;
+    width: 1px;
+    background-color: #bdbdbd;
+    margin: 0 102px;
+}
+
+.container-item-header {
+    margin-top: 50px;
+    margin-bottom: 40px;
+    text-align: center;
+    font-weight: normal;
+    font-size: 24px;
+}
+
+.container-item-header::before {
+    content: "";
+    display: block;
+    background-image: url(/assets/icons/flyer.png);
+    width: 60px;
+    background-size: 60px;
+    height: 60px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: auto;
+    margin-top: 45px;
+    margin-bottom: 15px;
+}
+
+.container-item {
+    border: 1px solid #BDBDBD;
+    box-sizing: border-box;
+    border-radius: 10px;
+    width: 518px;
+}
+
+.input-container {
+    margin: 0 50px 20px;
+}
+
+.button-container {
+    margin: 40px 0;
+}
