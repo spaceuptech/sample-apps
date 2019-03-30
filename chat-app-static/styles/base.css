@@ -4,6 +4,10 @@ html, body {
     font-family: Proxima Nova;
 }
 
+form {
+    margin-bottom:0;
+}
+
 .form-input {
     border: 1px solid #BDBDBD;
     box-sizing: border-box;
@@ -17,20 +21,7 @@ html, body {
     font-size: 16px;
 }
 
-.form-error {
-    display: block;
-    padding-left: 20px;
-    margin-top: 15px;
-    font-size: 16px;
-    line-height: 1;
-    color: #F5222D;
-}
-
-.form-error.hidden {
-    display: none;
-}
-
-.form-input[name="email"] {
+.form-input[name=email] {
     background-image: url(/assets/icons/email.png);
 }
 
@@ -40,6 +31,19 @@ html, body {
 
 .form-input[name=name] {
     background-image: url(/assets/icons/name.png);
+}
+
+.form-input-error {
+    display: block;
+    padding-left: 20px;
+    margin-top: 15px;
+    font-size: 16px;
+    line-height: 1;
+    color: #F5222D;
+}
+
+.form-input-error.hidden {
+    display: none;
 }
 
 .form-submit {
@@ -53,4 +57,8 @@ html, body {
     margin: auto;
     display: block;
     color: #fff;
+}
+
+input::placeholder {
+    color: #BDBDBD;
 }

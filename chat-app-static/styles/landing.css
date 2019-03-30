@@ -1,19 +1,18 @@
-.container {
+.app-container {
     display: flex;
     justify-content: center;
     height: 100vh;
     align-items: center;
 }
 
-.container-divider {
-    max-height: 554px;
-    height: 85vh;
-    width: 1px;
-    background-color: #bdbdbd;
-    margin: 0 102px;
+.card {
+    border: 1px solid #BDBDBD;
+    box-sizing: border-box;
+    border-radius: 10px;
+    width: 518px;
 }
 
-.container-item-header {
+.card-header {
     margin-top: 50px;
     margin-bottom: 40px;
     text-align: center;
@@ -21,7 +20,7 @@
     font-size: 24px;
 }
 
-.container-item-header::before {
+.card-header::before {
     content: "";
     display: block;
     background-image: url(/assets/icons/flyer.png);
@@ -35,11 +34,12 @@
     margin-bottom: 15px;
 }
 
-.container-item {
-    border: 1px solid #BDBDBD;
-    box-sizing: border-box;
-    border-radius: 10px;
-    width: 518px;
+.card-divider {
+    max-height: 554px;
+    height: 85vh;
+    width: 1px;
+    background-color: #bdbdbd;
+    margin: 0 102px;
 }
 
 .input-container {
