@@ -99,6 +99,7 @@
     border-bottom: 1px solid #EEEEEE;
     box-sizing: border-box;
     line-height: 90px;
+    cursor: pointer;
 }
 
 
@@ -285,6 +286,7 @@
     padding: 0;
     margin: 0 30px;
     background-size: 30px;
+    cursor: pointer;
 }
 
 .chat-input-container {

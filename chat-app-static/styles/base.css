@@ -57,6 +57,7 @@ form {
     margin: auto;
     display: block;
     color: #fff;
+    cursor: pointer;
 }
 
 input::placeholder {
