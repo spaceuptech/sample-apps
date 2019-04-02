@@ -133,6 +133,7 @@
     line-height: normal;
     color: rgba(20, 20, 20, 0.64);
     max-width: 220px;
+    margin-top: 5px;
 }
 
 .chat-item-date {
@@ -190,6 +191,7 @@
     line-height: normal;
     color: #51DB98;
     display: block;
+    margin-top: 5px;
 }
 
 .chat-container {
