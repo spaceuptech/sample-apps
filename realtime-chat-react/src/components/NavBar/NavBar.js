@@ -4,8 +4,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import NearMeIcon from '@material-ui/icons/NearMe';
+import Grid from '@material-ui/core/Grid';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { ReactComponent as WhiteLogo } from '../../assets/white_logo.svg';
 
 const styles = theme => ({
     root: {
@@ -28,11 +29,24 @@ const NavBar = (props) => {
         <div className={classes.root}>
             <AppBar position="fixed">
                 <Toolbar>
-                    <Typography variant="h6" color="inherit" className={classes.grow}>
-                        <NearMeIcon />
-                        WhatsApp Clone
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        spacing={8}
+                    >
+                        <Grid item>
+                            <WhiteLogo />
+
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="h6" color="inherit" className={classes.grow}>
+                                WhatsApp Clone
                  </Typography>
-                    <Button color="inherit"><ExitToAppIcon />Logout</Button>
+                        </Grid>
+                    </Grid>
+                    <Button color="inherit">Logout <ExitToAppIcon /></Button>
                 </Toolbar>
             </AppBar>
         </div>

@@ -9,7 +9,6 @@ import { Typography, Grid } from '@material-ui/core';
 const drawerWidth = 300;
 
 const styles = theme => {
-    console.log(Object.assign({}, theme))
     return {
         root: {
             display: 'flex',
@@ -71,7 +70,6 @@ const ChatPage = ({ classes }) => {
                     </Grid>
                     <Grid item>
                         <SectionBackground />
-
                     </Grid>
                 </Grid>
 
