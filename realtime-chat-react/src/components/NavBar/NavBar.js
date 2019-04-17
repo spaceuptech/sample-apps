@@ -9,7 +9,6 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const styles = theme => ({
     root: {
-        flexGrow: 1,
         zIndex: theme.zIndex.drawer + 1,
         alignItems: 'center',
     },
@@ -29,7 +28,6 @@ const NavBar = (props) => {
         <div className={classes.root}>
             <AppBar position="fixed">
                 <Toolbar>
-
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         <NearMeIcon />
                         WhatsApp Clone
