@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
 import RegisterForm from '../../components/RegisterForm/RegisterForm';
+import ReactCardFlip from 'react-card-flip';
+import PropTypes from 'prop-types';
 
 
 const styles = theme => {
@@ -30,12 +32,19 @@ const styles = theme => {
             height: '434px',
             maxHeight: '100%'
         },
+        linkToFlip: {
+            textAlign: 'center',
+            margin: '15px',
+            cursor: 'pointer'
+        }
     }
 };
 
-const LoginRegisterPage = (props) => {
-    const { classes } = props;
+const LoginRegisterPage = ({ classes }) => {
+    const [isFlipped, flip] = useState(0);
+
     return (
+
         <Grid
             container
             className={classes.content}
@@ -44,13 +53,22 @@ const LoginRegisterPage = (props) => {
             alignItems="center"
         >
             <Grid item className={classes.formContainer}>
+                <ReactCardFlip isFlipped={isFlipped} flipDirection="vertical">
+                    <div key="front">
+                        <LoginForm />
+                        <Typography onClick={() => flip(!!!isFlipped)} className={classes.linkToFlip}>Not member yet ?</Typography>
+                    </div>
 
-                <LoginForm />
-                {/* <RegisterForm /> */}
+                    <div key="back">
+                        <RegisterForm />
+                        <Typography onClick={() => flip(!!!isFlipped)} className={classes.linkToFlip}>Already a member?</Typography>
+                    </div>
+                </ReactCardFlip>
             </Grid>
         </Grid>
     )
 }
+
 
 export default withStyles(styles)(LoginRegisterPage);
 
