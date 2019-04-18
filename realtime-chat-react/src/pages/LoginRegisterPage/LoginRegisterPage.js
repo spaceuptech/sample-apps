@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Typography } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
 import RegisterForm from '../../components/RegisterForm/RegisterForm';
 import ReactCardFlip from 'react-card-flip';
-import PropTypes from 'prop-types';
+import { history } from '../../helpers';
 
 
 const styles = theme => {
@@ -40,8 +40,12 @@ const styles = theme => {
     }
 };
 
-const LoginRegisterPage = ({ classes }) => {
-    const [isFlipped, flip] = useState(0);
+const LoginRegisterPage = ({ classes, isRegister: flipRequired }) => {
+    const [isFlipped, flip] = useState(flipRequired);
+
+    useEffect(() => {
+        history.push(isFlipped ? "register" : "login")
+    })
 
     return (
 
