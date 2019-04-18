@@ -1,15 +1,23 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
-import ChatMessage from './ChatMessage';
+import ChatHeader from './ChatHeader';
+import ChatDiscussion from './ChatDiscussion';
+import ChatSend from './ChatSend';
 
 
 const styles = theme => ({
     root: {
         width: '100%',
         backgroundColor: theme.palette.background.paper,
+        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
+            height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
+        },
+        [theme.breakpoints.up('sm')]: {
+            height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
+        },
+        paddingBottom: '10px',
+        paddingTop: '5px'
     },
     avatar: {
         margin: 10,
@@ -24,41 +32,38 @@ const styles = theme => ({
         background: '#51DB98',
         borderRadius: '900px',
         border: '1px solid #51DB98',
-        // boxSizing: 'border-box',
     },
     chatPartnerName: {
         fontFamily: 'Proxima Nova',
         fontSize: '20px',
         lineHeight: 'normal',
         color: '#000000'
+    },
+    chatStartNotice: {
+        color: '#999999',
+        fontSize: '16px'
+    },
+    grow: {
+        flexGrow: 1,
+        flex: 1
     }
 });
 
 const Chat = (props) => {
     const { classes } = props;
     return (
-        <div>
-            <Grid container justify="flex-start" alignItems="center" direction="row">
-                <Grid item>
-                    <Avatar className={classes.avatar}>H</Avatar>
-                </Grid>
-                <Grid item>
-                    <Grid container justify="flex-start" alignItems="flex-start" direction="column">
-                        <Typography className={classes.chatPartnerName}>John Doe <span className={classes.activeDot}></span></Typography>
-                        <Typography>Active now</Typography>
-                    </Grid>
-                </Grid>
-            </Grid>
-
-            <Grid item>
-                <Grid container justify="flex-start" alignItems="center" direction="column">
-
-                    <ChatMessage messageText="Hello world !" incoming={true} />
-                    <ChatMessage messageText="Halo world !" incoming={false} />
-
-                </Grid>
-            </Grid>
-        </div>
+        <Grid
+            container
+            direction="column"
+            justify="space-evenly"
+            alignItems="stretch"
+            className={classes.root}
+            spacing={0}
+        >
+            <ChatHeader item />
+            <ChatDiscussion item className={classes.root} />
+            <ChatSend item />
+        </Grid>
     )
 }
 
