@@ -2,6 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
+import RegisterForm from '../../components/RegisterForm/RegisterForm';
 
 
 const styles = theme => {
@@ -45,6 +46,7 @@ const LoginRegisterPage = (props) => {
             <Grid item className={classes.formContainer}>
 
                 <LoginForm />
+                {/* <RegisterForm /> */}
             </Grid>
         </Grid>
     )
