@@ -9,6 +9,7 @@ import ChatSend from './ChatSend';
 const styles = theme => ({
     root: {
         width: '100%',
+        background: '#F5F5F5',
         backgroundColor: theme.palette.background.paper,
         [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
             height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,

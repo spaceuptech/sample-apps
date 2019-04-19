@@ -8,7 +8,9 @@ import ChatMessage from './ChatMessage';
 const styles = theme => ({
     root: {
         width: '100%',
-        flex:1
+        flex:1,
+        background: '#F5F5F5',
+
     },
     chatStartNotice: {
         color: '#999999',

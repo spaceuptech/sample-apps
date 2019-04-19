@@ -9,6 +9,7 @@ const styles = theme => ({
     root: {
         width: '100%',
         backgroundColor: theme.palette.background.paper,
+        height: '62px'
     },
     avatar: {
         margin: 10,
@@ -23,7 +24,6 @@ const styles = theme => ({
         background: '#51DB98',
         borderRadius: '900px',
         border: '1px solid #51DB98',
-        // boxSizing: 'border-box',
     },
     chatPartnerName: {
         fontFamily: 'Proxima Nova',

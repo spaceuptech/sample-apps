@@ -45,7 +45,7 @@ const LoginRegisterPage = ({ classes, isRegister: flipRequired }) => {
 
     useEffect(() => {
         history.push(isFlipped ? "register" : "login")
-    })
+    }, [isFlipped])
 
     return (
 

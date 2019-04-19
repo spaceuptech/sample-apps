@@ -1,7 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import { ChatList, NavBar, Chat } from '../../components'
+import { ChatList, NavBar, Chat, ChatSearch } from '../../components'
 import { ReactComponent as SectionBackground } from '../../assets/no_chat_loaded_background.svg';
 import { Typography, Grid } from '@material-ui/core';
 
@@ -27,7 +27,6 @@ const styles = theme => {
         content: {
             flexGrow: 1,
             flex: 1,
-            // padding: theme.spacing.unit * 3,
             width: '100%',
             height: '100vh'
         },
@@ -56,6 +55,7 @@ const ChatPage = ({ classes }) => {
                 }}
             >
                 <div className={classes.toolbar} />
+                <ChatSearch/>
                 <ChatList />
             </Drawer>
             <main className={classes.content}>

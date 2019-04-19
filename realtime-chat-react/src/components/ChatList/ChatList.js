@@ -9,6 +9,7 @@ const styles = theme => ({
         width: '100%',
         maxWidth: 360,
         backgroundColor: theme.palette.background.paper,
+        padding:0
     },
     inline: {
         display: 'inline',
@@ -19,9 +20,9 @@ const ChatList = (props) => {
     const { classes } = props;
     return (
         <List className={classes.root}>
-            <ChatListItem randID={1} />
-            <ChatListItem randID={2} />
-            <ChatListItem randID={3} />
+            <ChatListItem randID={1} isSelected={true}/>
+            <ChatListItem randID={2}/>
+            <ChatListItem randID={3}/>
         </List>
     )
 }
