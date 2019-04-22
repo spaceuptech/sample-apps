@@ -16,7 +16,6 @@ const styles = theme => {
         content: {
             flexGrow: 1,
             flex: 1,
-            // padding: theme.spacing.unit * 3,
             width: '100%',
             height: '100vh'
         },

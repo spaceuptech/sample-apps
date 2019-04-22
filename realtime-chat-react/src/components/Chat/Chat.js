@@ -5,10 +5,23 @@ import ChatHeader from './ChatHeader';
 import ChatDiscussion from './ChatDiscussion';
 import ChatSend from './ChatSend';
 
-
 const styles = theme => ({
-    root: {
+    chat: {
         width: '100%',
+        background: '#F5F5F5',
+        backgroundColor: theme.palette.background.paper,
+        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
+            minHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
+            maxHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
+        },
+        [theme.breakpoints.up('sm')]: {
+            minHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
+            maxHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
+        },
+        display: 'flex',
+        flexFlow: 'column'
+    },
+    root: {
         background: '#F5F5F5',
         backgroundColor: theme.palette.background.paper,
         [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
@@ -17,54 +30,27 @@ const styles = theme => ({
         [theme.breakpoints.up('sm')]: {
             height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
         },
-        paddingBottom: '10px',
-        paddingTop: '5px'
+        flexGrow: 1
     },
-    avatar: {
-        margin: 10,
-        background: 'none',
-        border: `1px solid ${theme.palette.primary.main}`,
-        color: theme.palette.primary.main
+    sendBox: {
+        padding: '30px 100px'
     },
-    activeDot: {
-        width: '8px',
-        height: '8px',
-        display: 'inline-block',
-        background: '#51DB98',
-        borderRadius: '900px',
-        border: '1px solid #51DB98',
-    },
-    chatPartnerName: {
-        fontFamily: 'Proxima Nova',
-        fontSize: '20px',
-        lineHeight: 'normal',
-        color: '#000000'
-    },
-    chatStartNotice: {
-        color: '#999999',
-        fontSize: '16px'
-    },
-    grow: {
-        flexGrow: 1,
-        flex: 1
-    }
 });
 
 const Chat = (props) => {
     const { classes } = props;
     return (
-        <Grid
-            container
-            direction="column"
-            justify="space-evenly"
-            alignItems="stretch"
-            className={classes.root}
-            spacing={0}
-        >
-            <ChatHeader item />
-            <ChatDiscussion item className={classes.root} />
-            <ChatSend item />
-        </Grid>
+        <div className={classes.root}>
+            <ChatHeader />
+            <Grid className={classes.chat}>
+                <Grid container direction="column"
+                    alignItems="baseline"
+                    style={{ overflow: 'auto' }}>
+                    <ChatDiscussion />
+                </Grid>
+                <ChatSend item className={classes.sendBox} />
+            </Grid>
+        </div>
     )
 }
 

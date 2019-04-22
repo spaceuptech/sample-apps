@@ -38,9 +38,9 @@ const styles = theme => ({
 });
 
 const ChatHeader = (props) => {
-    const { classes } = props;
+    const { classes, className } = props;
     return (
-        <Grid container justify="flex-start" alignItems="center" direction="row" >
+        <Grid container justify="flex-start" alignItems="center" direction="row" className={className}>
             <Grid item>
                 <Avatar className={classes.avatar}>J</Avatar>
             </Grid>

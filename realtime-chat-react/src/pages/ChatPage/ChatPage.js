@@ -5,7 +5,6 @@ import { ChatList, NavBar, Chat, ChatSearch } from '../../components'
 import { ReactComponent as SectionBackground } from '../../assets/no_chat_loaded_background.svg';
 import { Typography, Grid } from '@material-ui/core';
 
-
 const drawerWidth = 300;
 
 const styles = theme => {
@@ -38,6 +37,15 @@ const styles = theme => {
         },
         spanText: {
             color: '#BDBDBD'
+        },
+        chatList: {
+            overflow: 'auto',
+            [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
+                height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
+            },
+            [theme.breakpoints.up('sm')]: {
+                height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
+            },
         }
     }
 };
@@ -47,17 +55,16 @@ const ChatPage = ({ classes }) => {
     return (
         <div className={classes.root}>
             <NavBar />
-            <Drawer
+            < Drawer classes={{
+                paper: classes.drawerPaper,
+            }
+            }
                 className={classes.drawer}
-                variant="permanent"
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-            >
+                variant="permanent" >
                 <div className={classes.toolbar} />
-                <ChatSearch/>
-                <ChatList />
-            </Drawer>
+                <ChatSearch />
+                <ChatList className={classes.chatList} />
+            </Drawer >
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 {
