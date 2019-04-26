@@ -60,6 +60,7 @@ const Chat = (props) => {
                     alignItems="flex-end"
                     direction="row"
                 >
+                {JSON.stringify(message)}
                     <Typography className={classes.messageHour}>{message.time}<DoneAllIcon className={classNames(classes.messageViewed, { [classes.hidden]: props.incoming || !message.read })} /></Typography>
                 </Grid>
             </Grid>

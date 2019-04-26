@@ -5,11 +5,15 @@ import {
     ChatConstants
 } from "../constants/chat.constants";
 import * as _ from 'lodash'
+import {
+    store
+} from "../helpers/store";
 
 
 const loadChatList = () => {
     return dispatch => {
         dispatch(request());
+        const user = store.getState().user.user;
 
         ChatService.getChatsList().subscribe(
             list => {
@@ -17,8 +21,13 @@ const loadChatList = () => {
                 list.forEach((elt) => {
 
                     const onMessages = (docs, type) => {
-                        // Clear the existing todos
-                        const messages = _.reject(docs, message => ((message.to !== elt.user._id) && (message.from !== elt.user._id)))
+                        console.log(docs.length)
+
+                        // const messages = _.reject(docs, message => (((message.to !== elt.user._id) && (message.from !== elt.user._id) )|| (message.to !== elt.user._id)))
+                        const messages = _.filter(docs, message => (
+                                ((message.to === user._id) && (message.from === elt.user._id))) ||
+                            ((message.from === user._id) && (message.to === elt.user._id))
+                        )
                         if (messages.length > 0) {
                             // console.log("Incoming messages for user ", elt.user._id, messages)
                             dispatch(setDiscussionMessages(elt, messages))
