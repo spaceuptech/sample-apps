@@ -1,11 +1,9 @@
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
+import { connect } from 'react-redux'
 
-// Update this for debug purpose
-// TODO: move this to appropriate reducer
-const isLoggedIn = true;
 
-export const PrivateRoute = ({ component: Component, ...rest }) => (
+const PrivateRoute = ({ component: Component, isLoggedIn, ...rest }) => (
 
     <Route {...rest} render={(props) => (
 
@@ -14,4 +12,12 @@ export const PrivateRoute = ({ component: Component, ...rest }) => (
             : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
 
     )} />
-)
+) 
+
+const mapStateToProps = (state) => ({
+    isLoggedIn: state.user.authenticated
+});
+const mapDispatchToProps = (dispatch) => ({
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PrivateRoute);

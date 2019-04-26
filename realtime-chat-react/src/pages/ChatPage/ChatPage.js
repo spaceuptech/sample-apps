@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import { ChatList, NavBar, Chat, ChatSearch } from '../../components'
 import { ReactComponent as SectionBackground } from '../../assets/no_chat_loaded_background.svg';
 import { Typography, Grid } from '@material-ui/core';
+import { connect } from 'react-redux';
+import { ChatActions } from '../../actions/chat.actions';
+import * as _ from 'lodash'
 
 const drawerWidth = 300;
 
@@ -50,7 +53,11 @@ const styles = theme => {
     }
 };
 
-const ChatPage = ({ classes }) => {
+const ChatPage = (props) => {
+    const { classes, openedChat, opened } = props;
+    useEffect(() => {
+        
+    }, [props])
 
     return (
         <div className={classes.root}>
@@ -68,7 +75,7 @@ const ChatPage = ({ classes }) => {
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 {
-                    (true === false) ?
+                    (opened === -1) ?
                         <Grid
                             container
                             direction="column"
@@ -83,7 +90,7 @@ const ChatPage = ({ classes }) => {
                             </Grid>
                         </Grid>
                         :
-                        <Chat />
+                        <Chat content={openedChat} />
                 }
 
             </main>
@@ -91,5 +98,14 @@ const ChatPage = ({ classes }) => {
     )
 }
 
-export default withStyles(styles)(ChatPage);
+const mapStateToProps = (state) => ({
+    chatsList: state.chat.list,
+    opened: state.chat.opened,
+    openedChat: _.first(_.reject(state.chat.list, (chat) => chat.user._id !== (state.chat.opened)))
+});
+const mapDispatchToProps = (dispatch) => ({
+    loadChatList: () => dispatch(ChatActions.loadChatList())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatPage));
 

@@ -9,7 +9,6 @@ import classNames from 'classnames';
 const styles = theme => ({
     root: {
         width: '100%',
-        // backgroundColor: theme.palette.background.paper,
     },
     incoming: {
         background: '#fff',
@@ -45,7 +44,7 @@ const styles = theme => ({
 });
 
 const Chat = (props) => {
-    const { classes } = props;
+    const { classes, message } = props;
     return (
         <Grid container
             justify="flex-start"
@@ -54,15 +53,14 @@ const Chat = (props) => {
             className={classes.root}
         >
             <Grid item className={classNames(classes.messageContainer, { [classes.incoming]: props.incoming }, { [classes.outgoing]: !props.incoming })}>
-                <Typography  className={classes.messageText}>{props.messageText}</Typography>
+                <Typography className={classes.messageText}>{message.text}</Typography>
 
                 <Grid container
                     justify="flex-end"
                     alignItems="flex-end"
                     direction="row"
                 >
-                    <Typography className={classes.messageHour}>00:07<DoneAllIcon className={classNames( classes.messageViewed, { [classes.hidden]: props.incoming })} /></Typography>
-
+                    <Typography className={classes.messageHour}>{message.time}<DoneAllIcon className={classNames(classes.messageViewed, { [classes.hidden]: props.incoming || !message.read })} /></Typography>
                 </Grid>
             </Grid>
         </Grid>

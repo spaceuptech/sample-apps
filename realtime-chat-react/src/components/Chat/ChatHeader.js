@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
-
+import classnames from 'classnames'
 
 const styles = theme => ({
     root: {
@@ -34,20 +34,23 @@ const styles = theme => ({
     grow: {
         flexGrow: 1,
         flex: 1
+    },
+    hidden: {
+        display: 'none'
     }
 });
 
 const ChatHeader = (props) => {
-    const { classes, className } = props;
+    const { classes, className, user } = props;
     return (
         <Grid container justify="flex-start" alignItems="center" direction="row" className={className}>
             <Grid item>
-                <Avatar className={classes.avatar}>J</Avatar>
+                <Avatar className={classes.avatar}>{user.name.charAt(0)}</Avatar>
             </Grid>
             <Grid item>
                 <Grid container justify="flex-start" alignItems="flex-start" direction="column">
-                    <Typography className={classes.chatPartnerName}>John Doe <span className={classes.activeDot}></span></Typography>
-                    <Typography>Active now</Typography>
+                    <Typography className={classes.chatPartnerName}>{user.name} <span className={classnames(classes.activeDot, {[classes.hidden]: !user.isActive})}></span></Typography>
+                    <Typography className={classnames({[classes.hidden]: !user.isActive})}>Active now</Typography>
                 </Grid>
             </Grid>
         </Grid>

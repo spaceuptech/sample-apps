@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import LockIcon from '@material-ui/icons/Lock';
 // import PermIdentityIcon from '@material-ui/icons/PermIdentity';
@@ -6,6 +6,9 @@ import MailIcon from '@material-ui/icons/Mail';
 import { ReactComponent as OutlinedLogo } from '../../assets/outlined_logo.svg';
 import { Typography, Grid, Input } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+
+import { connect } from 'react-redux';
+import { UserActions } from '../../actions/user.actions';
 
 
 const styles = theme => {
@@ -48,7 +51,15 @@ const styles = theme => {
 };
 
 const LoginForm = (props) => {
-    const { classes } = props;
+    const { classes, login } = props;
+    const [user, setUser] = useState("")
+    const [password, setPassword] = useState("")
+    const [canSubmit, setCanSubmit] = useState(false)
+
+    useEffect(() => {
+        setCanSubmit(user.length > 0 && password.length > 0)
+    }, [user, password])
+
     return (
         <Grid
             container
@@ -71,13 +82,14 @@ const LoginForm = (props) => {
                     placeholder="Email"
                     disableUnderline={true}
                     startAdornment={
-                        <MailIcon className={classes.inputIcon}/>
+                        <MailIcon className={classes.inputIcon} />
                     }
+                    onChange={(event) => setUser(event.target.value)}
                 />
             </Grid>
             <Grid item>
                 <Input
-                    type="text"
+                    type="password"
                     className={classes.input}
                     defaultValue=""
                     placeholder="Password"
@@ -85,16 +97,25 @@ const LoginForm = (props) => {
                     startAdornment={
                         <LockIcon className={classes.inputIcon} />
                     }
+                    onChange={(event) => setPassword(event.target.value)}
                 />
             </Grid>
             <Grid item>
-                <Button variant="contained" color="primary" className={classes.submitButton}>
-                    Login 
-                        </Button>
+                <Button variant="contained" color="primary" className={classes.submitButton} disabled={!canSubmit} onClick={() => login(user, password)}>
+                    Login
+                    </Button>
             </Grid>
         </Grid>
     )
 }
 
-export default withStyles(styles)(LoginForm);
+
+const mapStateToProps = (state) => ({
+
+});
+const mapDispatchToProps = (dispatch) => ({
+    login: (user, pass) => dispatch(UserActions.login(user, pass))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(LoginForm));
 
