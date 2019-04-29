@@ -49,7 +49,6 @@ const getChats = (userID) => {
 
         config.db.get("chats").where(condition).apply().then(res => {
             if (res.status === 200) {
-console.log(res)
                 observer.next(res.data.result);
                 return;
             }
@@ -61,7 +60,7 @@ console.log(res)
     });
 }
 
-const startMessagesRealtime = (partnerID, onMessages, onError) => {
+const startMessagesRealtime = (partnerID) => {
     const user = store.getState().user.user;
     const condition = or(
         and(cond("to", "==", user._id), cond("from", "==", partnerID)),
@@ -73,14 +72,29 @@ const startMessagesRealtime = (partnerID, onMessages, onError) => {
     )
 }
 
+const startUsersRealtime  = () => {
+    return config.db.liveQuery("users")
+}
+
+const startChatsRealtime = () => {
+    const user = store.getState().user.user;
+    const condition = or(
+        and(cond("to", "==", user._id)),
+    )
+
+    return config.db.liveQuery("chats").where(
+        condition
+    )
+}
+
 const getChatsList = () => {
 
     return Observable.create((observer) => {
         const activeUser = store.getState().user.user;
 
         let userID = activeUser._id
-        const fetchChats$ = getChats(userID)
         const fetchUsers$ = getUsers(userID)
+        const fetchChats$ = getChats(userID)
 
         const combined = combineLatest(fetchUsers$, fetchChats$);
         combined.subscribe(
@@ -92,17 +106,21 @@ const getChatsList = () => {
 
                     ]
                 }
-                users.forEach(user => {
-                    if (!chats[user._id]) {
-                        chats[user._id] = {
-                            user: user,
-                            messages: [
 
-                            ]
+                existingChats.forEach(chat => {
+                    if (chat.to !== 'ALL') {
+                        const partner = chat.to === userID ? chat.from : chat.to
+                        if (!chats[partner]) {
+                            chats[partner] = {
+                                user: _.first(users.filter((usr) => usr._id === partner)),
+                                messages: [
+
+                                ]
+                            }
                         }
                     }
-                });
-
+                })
+console.log(existingChats)
                 // TODO
                 // chats = _.reject(chats, chat => chat.messages.length === 0)
                 chats = _.reject(chats, chat => chat.user._id === activeUser._id)
@@ -118,5 +136,7 @@ const getChatsList = () => {
 export const ChatService = {
     getChatsList,
     sendMessage,
-    startMessagesRealtime
+    startMessagesRealtime,
+    startChatsRealtime,
+    startUsersRealtime
 }

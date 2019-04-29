@@ -9,10 +9,53 @@ import {
 } from '../helpers';
 import { ChatActions } from "./chat.actions";
 
-const signup = (username, password) => {
+/**
+ * SignUp to space-cloud API using identifiers.
+ * This action will trigger a login on success.
+ * @param {string} email 
+ * @param {string} username 
+ * @param {string} password 
+ */
+const signup = (email, username, password) => {
+    const request = () => {
+        return {
+            type: userConstants.REGISTER_REQUEST
+        }
+    }
 
+    const success = () => {
+        return {
+            type: userConstants.REGISTER_SUCCESS,
+        }
+    }
+
+    const failure = (reason) => {
+        return {
+            type: userConstants.REGISTER_FAILURE,
+            reason
+        }
+    }
+    return dispatch => {
+        dispatch(request());
+
+        userService.signup(email, username, password).subscribe(
+            (data) => {
+                dispatch(success(data.user, data.token));
+                dispatch(login(email, password))
+            },
+            (error) => {
+                console.log("ERROR DURING REGISTER", error)
+                dispatch(failure(error.toString()));
+            }
+        );
+    };
 }
 
+/**
+ * Login to space-cloud API
+ * @param {string} username 
+ * @param {string} password 
+ */
 const login = (username, password) => {
     const loginRequest = () => {
         return {
@@ -52,6 +95,11 @@ const login = (username, password) => {
     };
 }
 
+/**
+ * Logout from api. 
+ * Clears token and user from local storage.
+ * This function also stops all running livequeries
+ */
 const logout = () => {
     return dispatch => {
         dispatch(ChatActions.stopAllLiveQueries())

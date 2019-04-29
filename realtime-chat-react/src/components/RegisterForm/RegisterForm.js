@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import LockIcon from '@material-ui/icons/Lock';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
@@ -6,6 +6,8 @@ import MailIcon from '@material-ui/icons/Mail';
 import { ReactComponent as OutlinedLogo } from '../../assets/outlined_logo.svg';
 import { Typography, Grid, Input } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import { UserActions } from '../../actions/user.actions';
+import { connect } from 'react-redux';
 
 
 const styles = theme => {
@@ -48,7 +50,30 @@ const styles = theme => {
 };
 
 const RegisterForm = (props) => {
-    const { classes } = props;
+    const { classes, signup } = props;
+    const [email, setEmail] = useState("")
+    const [user, setUser] = useState("")
+    const [password, setPassword] = useState("")
+    const [canSubmit, setCanSubmit] = useState(false)
+
+    const validateEmail = (email) => {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    const validateForm = () => {
+        if (user.length > 0 && password.length > 0 && email.length > 0) {
+            // return validateEmail(email)
+            return true
+        }
+        return false
+    }
+
+    useEffect(() => {
+        setCanSubmit(validateForm())
+    }, [user, password, email])
+
+
     return (
         <Grid
             container
@@ -73,6 +98,7 @@ const RegisterForm = (props) => {
                     startAdornment={
                         <PermIdentityIcon className={classes.inputIcon} />
                     }
+                    onChange={(event) => setUser(event.target.value)}
                 />
             </Grid>
             <Grid item>
@@ -85,6 +111,7 @@ const RegisterForm = (props) => {
                     startAdornment={
                         <MailIcon className={classes.inputIcon} />
                     }
+                    onChange={(event) => setEmail(event.target.value)}
                 />
             </Grid>
             <Grid item>
@@ -97,16 +124,24 @@ const RegisterForm = (props) => {
                     startAdornment={
                         <LockIcon className={classes.inputIcon} />
                     }
+                    onChange={(event) => setPassword(event.target.value)}
                 />
             </Grid>
             <Grid item>
-                <Button variant="contained" color="primary" className={classes.submitButton}>
-                    Join
-                </Button>
+                <Button variant="contained" color="primary" className={classes.submitButton} disabled={!canSubmit} onClick={() => signup(email, user, password)}>
+                    Sign up
+                    </Button>
             </Grid>
         </Grid>
     )
 }
 
-export default withStyles(styles)(RegisterForm);
+const mapStateToProps = (state) => ({
+
+});
+const mapDispatchToProps = (dispatch) => ({
+    signup: (email, user, pass) => dispatch(UserActions.signup(email, user, pass))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RegisterForm));
 

@@ -1,16 +1,15 @@
-import {
-    ChatService
-} from "../services/ChatService";
-import {
-    ChatConstants
-} from "../constants/chat.constants";
-import {
-    store
-} from "../helpers/store";
-// import * as _ from 'lodash'
+import { ChatService } from "../services/ChatService";
+import { ChatConstants } from "../constants/chat.constants";
+import { store } from "../helpers/store";
 
+
+/**
+ * Stop all existing livequeries.
+ * @authenticated
+ */
 const stopAllLiveQueries = () => {
     return dispatch => {
+        // Stop all single threads listeners
         store.getState().chat.liveQueries.forEach(liveQuery => {
             liveQuery()
             dispatch({
@@ -18,136 +17,232 @@ const stopAllLiveQueries = () => {
                 liveQuery
             })
         })
+
+        // Stop listening for new chats
+        store.getState().chat.chatsListener()
+        // Stop listening for new users
+        store.getState().chat.usersListener()
     }
 }
 
+/**
+ * Dispatch an action to reset
+ * chat reducer to its initial state
+ * @authenticated
+ */
+const clearData = () => ({
+    type: ChatConstants.CLEAR_DATA
+})
+
+/**
+ * Add a new chat to the list. 
+ * Dispatch this action on new incoming chat (created post-init)
+ * @param {Object} chat 
+ * @authenticated
+ */
+const addChat = (chat) => ({
+    type: ChatConstants.ADD_CHAT,
+    chat
+})
+
+/**
+ * Listen to messages thread of a given chat.
+ * This action instantiates 2 callbacks (onMessages & onError).
+ * LiveQuery object is stored in chat reducer
+ * @param {Object} chat 
+ * @authenticated
+ */
+const listenToThread = (chat) => {
+    return dispatch => {
+        const currentLiveQuery = ChatService.startMessagesRealtime(chat.user._id).subscribe(
+            /**
+             * Callback triggered on new messages in given thread
+             * @param {Array<Object>} docs 
+             * @param {*} type 
+             */
+            (docs, type) => {
+                // TODO 8byr0 compare incoming list with existing to append only new messages
+
+                if (docs.length > 0) {
+                    dispatch(setDiscussionMessages(chat, docs))
+                }
+
+            },
+            /**
+             * Callback triggered when something goes wrong
+             * @param {*} err
+             */
+            (err) => {
+                // TODO handle error
+                console.log('Operation failed:', err)
+            })
+
+        dispatch({
+            type: ChatConstants.SAVE_LIVE_QUERY,
+            liveQuery: currentLiveQuery
+        })
+    }
+}
+
+/**
+ * Listen to newly created users.
+ * @authenticated
+ */
+const listenToUsers = () => {
+    return dispatch => {
+        const newUsersListener = ChatService.startUsersRealtime().subscribe(
+            /**
+             * Callback triggered on new users registered
+             * @param {Array<Object>} docs 
+             * @param {*} type 
+             */
+            (docs, type) => {
+                // TODO
+            },
+
+            /**
+             * Callback triggered when something goes wrong
+             * @param {*} err
+             */
+            (err) => {
+                // TODO
+            })
+
+        dispatch({
+            type: ChatConstants.SET_INCOMING_USERS_LISTENER,
+            listener: newUsersListener
+        })
+    }
+}
+
+/**
+ * Listen to new chats.
+ * Instantiated callback may be triggered when someone 
+ * starts a discussion with active user
+ * @authenticated
+ */
+const listenToChats = () => {
+    return dispatch => {
+        const newChatsListener = ChatService.startChatsRealtime().subscribe(
+            /**
+             * Callback triggered on new messages in given thread
+             * @param {Array<Object>} docs 
+             * @param {*} type 
+             */
+            (docs, type) => {
+
+            },
+
+            /**
+             * Callback triggered when something goes wrong
+             * @param {*} err
+             */
+            (err) => {
+
+            })
+
+        dispatch({
+            type: ChatConstants.SET_INCOMING_CHATS_LISTENER,
+            listener: newChatsListener
+        })
+    }
+}
+
+
+/**
+ * Load initial list of chats
+ * Will be fetched from space-cloud
+ * @authenticated
+ */
 const loadChatList = () => {
     return dispatch => {
-        dispatch(request());
-        // const user = store.getState().user.user;
+        dispatch({ type: ChatConstants.LOAD_LIST_REQUEST });
 
         ChatService.getChatsList().subscribe(
             list => {
-                dispatch(success(list));
+                // Dispatch fetched list of chats
+                dispatch({
+                    type: ChatConstants.LOAD_LIST_SUCCESS,
+                    list
+                });
+
                 list.forEach((elt) => {
-
-                    const onMessages = (docs, type) => {
-                        // TODO 8byr0 compare incoming list with existing to append only new messages
-
-                        if (docs.length > 0) {
-                            dispatch(setDiscussionMessages(elt, docs))
-                        }
-
-                    }
-                    const onError = (err) => {
-                        console.log('Operation failed:', err)
-                    }
-                    const currentLiveQuery = ChatService.startMessagesRealtime(elt.user._id, onMessages, onError).subscribe(onMessages, onError)
-
-                    dispatch({
-                        type: ChatConstants.SAVE_LIVE_QUERY,
-                        liveQuery: currentLiveQuery
-                    })
+                    // For each discussion start listening to incoming messages
+                    dispatch(listenToThread(elt))
                 })
+
+                // Listen to newly created chats
+                dispatch(listenToChats())
+
+                // Listen to newly created users
+                dispatch(listenToUsers())
             },
             (error) => {
-                dispatch(failure(error.toString()));
+                dispatch({
+                    type: ChatConstants.LOAD_LIST_FAILURE,
+                    error: error.toString()
+                });
             }
         );
     };
-
-    function request() {
-        return {
-            type: ChatConstants.LOAD_LIST_REQUEST
-        }
-    }
-
-    function success(list) {
-        return {
-            type: ChatConstants.LOAD_LIST_SUCCESS,
-            list
-        }
-    }
-
-    function failure(error) {
-        return {
-            type: ChatConstants.LOAD_LIST_FAILURE,
-            error
-        }
-    }
 }
 
-
-const setDiscussionMessages = (discussion, messages) => {
+/**
+ * Set the messages of a given chat
+ * @param {Object} chat 
+ * @param {Array<Object>} messages 
+ */
+const setDiscussionMessages = (chat, messages) => {
     return {
         type: ChatConstants.REFRESH_MESSAGES,
-        discussion: discussion,
+        discussion: chat,
         messages: messages
     }
 }
-const openDiscussion = (chatData) => {
+
+/**
+ * Set the active chat of the app
+ * TODO pass only id instead of full object
+ * @param {Object} chat 
+ */
+const openDiscussion = (chat) => {
     return dispatch => {
-        dispatch(request());
-        dispatch(success(chatData.user._id));
-    };
-
-    function request() {
-        return {
-            type: ChatConstants.OPEN_DISCUSSION_REQUEST
-        }
-    }
-
-    function success(id) {
-        return {
+        dispatch({ type: ChatConstants.OPEN_DISCUSSION_REQUEST });
+        dispatch({
             type: ChatConstants.OPEN_DISCUSSION_SUCCESS,
-            id
-        }
-    }
-
-    // function failure(error) {
-    //     return {
-    //         type: ChatConstants.OPEN_DISCUSSION_FAILURE,
-    //         error
-    //     }
-    // }
+            id: chat.user._id
+        });
+    };
 }
-const sendMessage = (id, text) => {
-    return dispatch => {
-        dispatch(request());
 
-        ChatService.sendMessage(id, text).subscribe(
-            list => {
-                dispatch(success(list));
+/**
+ * Send a new message
+ * @param {string} partnerID id of the partner
+ * @param {string} text text of the message
+ */
+const sendMessage = (partnerID, text) => {
+    return dispatch => {
+        dispatch({ type: ChatConstants.SEND_MESSAGE_REQUEST });
+        // Call chat service function
+        ChatService.sendMessage(partnerID, text).subscribe(
+            res => {
+                dispatch({ type: ChatConstants.SEND_MESSAGE_SUCCESS });
             },
             (error) => {
-                dispatch(failure(error.toString()));
+                // In case of error dispatch an FAILURE notice
+                dispatch({
+                    type: ChatConstants.SEND_MESSAGE_FAILURE,
+                    error: error.toString()
+                });
             }
         );
     };
-
-    function request() {
-        return {
-            type: ChatConstants.SEND_MESSAGE_REQUEST
-        }
-    }
-
-    function success(message) {
-        return {
-            type: ChatConstants.SEND_MESSAGE_SUCCESS
-        }
-    }
-
-    function failure(error) {
-        return {
-            type: ChatConstants.SEND_MESSAGE_FAILURE,
-            error
-        }
-    }
 }
 
 export const ChatActions = {
     loadChatList,
     openDiscussion,
     sendMessage,
-    stopAllLiveQueries
+    stopAllLiveQueries,
+    clearData
 }

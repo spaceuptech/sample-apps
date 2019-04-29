@@ -7,7 +7,9 @@ const initialState = {
     isLoadingDiscussion: false,
     list: [],
     opened: ChatConstants.NO_CHAT_OPENED,
-    liveQueries: []
+    liveQueries: [],
+    chatsListener: null,
+    usersListener: null,
 }
 
 function updateMessages(array, action) {
@@ -27,6 +29,30 @@ function updateMessages(array, action) {
 
 export const chat = (state = initialState, action) => {
     switch (action.type) {
+        case ChatConstants.CLEAR_DATA:
+            return {
+                ...initialState
+            }
+        case ChatConstants.SET_INCOMING_USERS_LISTENER:
+            return {
+                ...state,
+                usersListener: action.listener
+            }
+        case ChatConstants.REMOVE_INCOMING_USERS_LISTENER:
+            return {
+                ...state,
+                usersListener: null
+            }
+        case ChatConstants.SET_INCOMING_CHATS_LISTENER:
+            return {
+                ...state,
+                chatListener: action.listener
+            }
+        case ChatConstants.REMOVE_INCOMING_CHATS_LISTENER:
+            return {
+                ...state,
+                chatsListener: null
+            }
         case ChatConstants.LOAD_LIST_REQUEST:
             return {
                 ...state,
