@@ -45,6 +45,15 @@ const styles = theme => ({
 
 const Chat = (props) => {
     const { classes, message } = props;
+
+    const formatDate = () => {
+        let time = new Date(message.time)
+
+        time = time.toLocaleTimeString()
+        return time
+
+    }
+
     return (
         <Grid container
             justify="flex-start"
@@ -60,7 +69,7 @@ const Chat = (props) => {
                     alignItems="flex-end"
                     direction="row"
                 >
-                    <Typography className={classes.messageHour}>{message.time}<DoneAllIcon className={classNames(classes.messageViewed, { [classes.hidden]: props.incoming || !message.read })} /></Typography>
+                    <Typography className={classes.messageHour}>{formatDate()}<DoneAllIcon className={classNames(classes.messageViewed, { [classes.hidden]: props.incoming || !message.read })} /></Typography>
                 </Grid>
             </Grid>
         </Grid>
