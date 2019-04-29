@@ -4,8 +4,22 @@ import {
 import {
     ChatConstants
 } from "../constants/chat.constants";
+import {
+    store
+} from "../helpers/store";
 // import * as _ from 'lodash'
 
+const stopAllLiveQueries = () => {
+    return dispatch => {
+        store.getState().chat.liveQueries.forEach(liveQuery => {
+            liveQuery()
+            dispatch({
+                type: ChatConstants.REMOVE_LIVE_QUERY,
+                liveQuery
+            })
+        })
+    }
+}
 
 const loadChatList = () => {
     return dispatch => {
@@ -19,7 +33,7 @@ const loadChatList = () => {
 
                     const onMessages = (docs, type) => {
                         // TODO 8byr0 compare incoming list with existing to append only new messages
-                                                                        
+
                         if (docs.length > 0) {
                             dispatch(setDiscussionMessages(elt, docs))
                         }
@@ -28,7 +42,12 @@ const loadChatList = () => {
                     const onError = (err) => {
                         console.log('Operation failed:', err)
                     }
-                    ChatService.startMessagesRealtime(elt.user._id, onMessages, onError)
+                    const currentLiveQuery = ChatService.startMessagesRealtime(elt.user._id, onMessages, onError).subscribe(onMessages, onError)
+
+                    dispatch({
+                        type: ChatConstants.SAVE_LIVE_QUERY,
+                        liveQuery: currentLiveQuery
+                    })
                 })
             },
             (error) => {
@@ -129,5 +148,6 @@ const sendMessage = (id, text) => {
 export const ChatActions = {
     loadChatList,
     openDiscussion,
-    sendMessage
+    sendMessage,
+    stopAllLiveQueries
 }

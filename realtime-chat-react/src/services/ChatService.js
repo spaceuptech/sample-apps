@@ -7,14 +7,13 @@ import { config } from './config';
 
 
 const sendMessage = (partnerID, text) => {
-    console.log("send messag", partnerID)
     // Get the input field values
     return Observable.create((observer) => {
         const user = store.getState().user.user;
 
         // Add todo to the database
         config.db.insert("messages")
-            .one({ _id: config.generateId(), text: text, read: false, to: partnerID, from: user._id })
+            .one({ _id: config.generateId(), text: text, read: false, to: partnerID, from: user._id, time: new Date() })
             .then(res => {
                 // Verify if get request is successful
                 if (res.status !== 200) {
@@ -50,7 +49,7 @@ const getChats = (userID) => {
 
         config.db.get("chats").where(condition).apply().then(res => {
             if (res.status === 200) {
-
+console.log(res)
                 observer.next(res.data.result);
                 return;
             }
@@ -72,7 +71,6 @@ const startMessagesRealtime = (partnerID, onMessages, onError) => {
     return config.db.liveQuery("messages").where(
         (partnerID.toString().localeCompare("ALL") === 0) ? allCondition : condition
     )
-        .subscribe(onMessages, onError)
 }
 
 const getChatsList = () => {
@@ -95,9 +93,6 @@ const getChatsList = () => {
                     ]
                 }
                 users.forEach(user => {
-                    if (_.filter(existingChats, (chat) => chat.to === user._id).length === 0) {
-                        return
-                    }
                     if (!chats[user._id]) {
                         chats[user._id] = {
                             user: user,

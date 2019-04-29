@@ -1,7 +1,9 @@
 import {
     userConstants
 } from "../constants/user.constants";
-import { config } from "../services/config";
+import {
+    config
+} from "../services/config";
 
 
 
@@ -9,7 +11,7 @@ let existingUser = JSON.parse(localStorage.getItem('user'));
 let userToken = JSON.parse(localStorage.getItem('token'));
 
 // TODO move this elsewhere
-if(userToken){
+if (userToken) {
     config.api.setToken(userToken)
 }
 
@@ -22,6 +24,13 @@ const initialState = {
 
 export const user = (state = initialState, action) => {
     switch (action.type) {
+        case (userConstants.LOGOUT):
+            return {
+                ...state,
+                authenticated: false,
+                user: null,
+                token: null
+            }
         case (userConstants.LOGIN_REQUEST):
             return {
                 ...state,

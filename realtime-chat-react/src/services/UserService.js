@@ -1,7 +1,6 @@
 import {
     config
 } from "./config";
-import { history } from '../helpers';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -10,9 +9,6 @@ export const rejectionCause = {
     INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'
 }
 
-export const userService = {
-    login,
-};
 
 function login(username, password) {
 
@@ -22,7 +18,7 @@ function login(username, password) {
                 config.api.setToken(res.data.token)
 
                 observer.next({user: res.data.user, token: res.data.token})
-                history.push('/')
+                
 
             }else{
                 observer.error("Unable to sign in")
@@ -31,3 +27,12 @@ function login(username, password) {
     })
 
 }
+
+const logout = async ()=> {
+    config.api.setToken(null)
+}
+
+export const userService = {
+    login,
+    logout
+};

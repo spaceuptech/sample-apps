@@ -6,7 +6,8 @@ const initialState = {
     isLoadingChatList: false,
     isLoadingDiscussion: false,
     list: [],
-    opened: ChatConstants.NO_CHAT_OPENED
+    opened: ChatConstants.NO_CHAT_OPENED,
+    liveQueries: []
 }
 
 function updateMessages(array, action) {
@@ -53,9 +54,20 @@ export const chat = (state = initialState, action) => {
             return {
                 ...state,
                 isLoadingDiscussion: false,
-                opened: state.list.findIndex((elt)=>elt.user._id === action.id)
+                opened: state.list.findIndex((elt) => elt.user._id === action.id)
                 // opened: action.id
                 // opened: _.first(_.reject(state.list, chat => chat.user._id !== action.id))
+            }
+        case ChatConstants.SAVE_LIVE_QUERY:
+            return {
+                ...state,
+                liveQueries: [...state.liveQueries, action.liveQuery]
+
+            }
+        case ChatConstants.REMOVE_LIVE_QUERY:
+            return {
+                ...state,
+                liveQueries: state.liveQueries.filter(lq => lq !== action.liveQuery)
             }
         case ChatConstants.OPEN_DISCUSSION_REQUEST:
             return {

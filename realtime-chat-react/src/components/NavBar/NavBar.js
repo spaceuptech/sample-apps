@@ -7,6 +7,8 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { ReactComponent as WhiteLogo } from '../../assets/white_logo.svg';
+import { connect } from 'react-redux'
+import { UserActions } from '../../actions/user.actions';
 
 const styles = theme => ({
     root: {
@@ -46,11 +48,15 @@ const NavBar = (props) => {
                  </Typography>
                         </Grid>
                     </Grid>
-                    <Button color="inherit">Logout <ExitToAppIcon /></Button>
+                    <Button color="inherit" onClick={props.logout}>Logout <ExitToAppIcon /></Button>
                 </Toolbar>
             </AppBar>
         </div>
     );
 }
 
-export default withStyles(styles)(NavBar);
+const mapDispatchToProps = dispatch =>({
+    logout: ()=>dispatch(UserActions.logout())
+})
+
+export default connect(null, mapDispatchToProps)(withStyles(styles)(NavBar));

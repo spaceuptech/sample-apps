@@ -4,9 +4,14 @@ import {
 import {
     userConstants
 } from "../constants/user.constants";
+import {
+    history
+} from '../helpers';
+import { ChatActions } from "./chat.actions";
 
+const signup = (username, password) => {
 
-
+}
 
 const login = (username, password) => {
     const loginRequest = () => {
@@ -36,8 +41,8 @@ const login = (username, password) => {
             (data) => {
                 localStorage.setItem("user", JSON.stringify(data.user))
                 localStorage.setItem("token", JSON.stringify(data.token))
-
                 dispatch(loginSuccess(data.user, data.token));
+                history.push('/')
             },
             (error) => {
                 console.log("ERROR LOGGING IN", error)
@@ -45,11 +50,25 @@ const login = (username, password) => {
             }
         );
     };
+}
+
+const logout = () => {
+    return dispatch => {
+        dispatch(ChatActions.stopAllLiveQueries())
+        localStorage.removeItem("user")
+        localStorage.removeItem("token")
+        dispatch({
+            type: userConstants.LOGOUT
+        })
+        history.push('/login')
 
 
+    }
 }
 
 
 export const UserActions = {
-    login
+    login,
+    signup,
+    logout
 }
