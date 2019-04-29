@@ -16,7 +16,7 @@
     "redux-thunk": "^2.3.0",
     "rxjs": "^6.5.1",
     "rxjs-compat": "^6.5.1",
-    "space-api": "^0.4.5"
+    "space-api": "^0.4.7"
   },
   "scripts": {
     "start": "react-scripts start",

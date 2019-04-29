@@ -26,25 +26,6 @@ const sendMessage = (partnerID, text) => {
     })
 }
 
-const getUserMessages = (userID) => {
-    return Observable.create((observer) => {
-
-        const condition = or(cond("from", "==", userID), cond("to", "==", userID));
-
-        config.db.get("messages").where(condition).apply().then(res => {
-            if (res.status === 200) {
-
-                observer.next(res.data.result);
-                return;
-            }
-        })
-            .catch(ex => {
-                // Exception occured while processing request
-            });
-
-    });
-}
-
 const getUsers = () => {
     return Observable.create((observer) => {
         config.db.profiles().then(res => {
@@ -58,42 +39,40 @@ const getUsers = () => {
 
     });
 }
-let done = false
+
+const getChats = (userID) => {
+    return Observable.create((observer) => {
+        const condition = or(
+            cond("from", "==", userID),
+            cond("to", "==", userID),
+            cond("to", "==", "ALL")
+        );
+
+        config.db.get("chats").where(condition).apply().then(res => {
+            if (res.status === 200) {
+
+                observer.next(res.data.result);
+                return;
+            }
+        })
+            .catch(ex => {
+                // Exception occured while processing request
+            });
+
+    });
+}
+
 const startMessagesRealtime = (partnerID, onMessages, onError) => {
     const user = store.getState().user.user;
-    let first = _.cloneDeep(config.db.liveQuery("messages"));
-
-    // console.log(user)
-    config.db.liveQuery("messages").where(
-            or(
-                and(cond("to", "==", user._id), cond("from", "==", partnerID)),
-                and(cond("to", "==", partnerID), cond("from", "==", user._id))
-            )
-        )
+    const condition = or(
+        and(cond("to", "==", user._id), cond("from", "==", partnerID)),
+        and(cond("to", "==", partnerID), cond("from", "==", user._id))
+    )
+    const allCondition = cond("to", "==", partnerID)
+    return config.db.liveQuery("messages").where(
+        (partnerID.toString().localeCompare("ALL") === 0) ? allCondition : condition
+    )
         .subscribe(onMessages, onError)
-    // if (!done) {
-    //     const user = store.getState().user.user;
-
-    //     let first = _.cloneDeep(config.db.liveQuery("messages"));
-    //         first.where(
-    //             and(cond("to", "==", user._id), cond("from", "==", "0c24b0e3-6651-11e9-a65a-18dbf207aef7")),
-    //             // and(cond("to", "==", "1"), cond("from", "==", "2")),
-
-    //         )
-    //         .subscribe((docs, type) => {
-    //             // console.log("STANDALONE docs", docs)
-    //         }, onError)
-
-    //     config.db.liveQuery("messages")
-    //         .where(
-    //             and(cond("to", "==", user._id), cond("from", "==", "0c24b0e3-6651-11e9-a65a-18dbf207aef7")),
-
-    //         )
-    //         .subscribe((docs, type) => {
-    //             // console.log("STANDALONE docs", docs)
-    //         }, onError)
-    //     done = true
-    // }
 }
 
 const getChatsList = () => {
@@ -102,14 +81,23 @@ const getChatsList = () => {
         const activeUser = store.getState().user.user;
 
         let userID = activeUser._id
-        const fetchUsers$ = getUsers()
-        const fetchMessages$ = getUserMessages(userID);
+        const fetchChats$ = getChats(userID)
+        const fetchUsers$ = getUsers(userID)
 
-        const combined = combineLatest(fetchUsers$, fetchMessages$);
+        const combined = combineLatest(fetchUsers$, fetchChats$);
         combined.subscribe(
-            ([users, messages]) => {
+            ([users, existingChats]) => {
                 let chats = {}
+                chats["ALL"] = {
+                    user: { name: "ALL", _id: "ALL" },
+                    messages: [
+
+                    ]
+                }
                 users.forEach(user => {
+                    if (_.filter(existingChats, (chat) => chat.to === user._id).length === 0) {
+                        return
+                    }
                     if (!chats[user._id]) {
                         chats[user._id] = {
                             user: user,
@@ -119,18 +107,7 @@ const getChatsList = () => {
                         }
                     }
                 });
-                messages.forEach(message => {
-                    if (userID === message.to) {
-                        if (chats[message.from]) {
-                            chats[message.from].messages.push(message)
-                        }
-                    }
-                    else if (userID === message.from) {
-                        if (chats[message.to]) {
-                            chats[message.to].messages.push(message)
-                        }
-                    }
-                })
+
                 // TODO
                 // chats = _.reject(chats, chat => chat.messages.length === 0)
                 chats = _.reject(chats, chat => chat.user._id === activeUser._id)
