@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
@@ -23,6 +23,11 @@ const styles = theme => ({
 
 const ChatDiscussion = (props) => {
     const { classes, className, data } = props;
+    const messagesEnd = React.createRef()
+
+    useEffect(()=>{
+        messagesEnd.current.scrollIntoView({ behavior: 'smooth' })
+    },[props])
 
     return (
         <Grid container justify="flex-start" alignItems="center" direction="column" className={classNames(classes.root, className)}>
@@ -32,13 +37,15 @@ const ChatDiscussion = (props) => {
                     <ChatMessage message={message} incoming={message.from === data.user._id} key={idx} />
                 ))
             }
+            <div ref={messagesEnd} />
+
         </Grid>
     )
 }
 
 
 const mapStateToProps = (state) => ({
-    
+
 });
 const mapDispatchToProps = (dispatch) => ({
     loadChatList: () => dispatch(ChatActions.loadChatList()),
