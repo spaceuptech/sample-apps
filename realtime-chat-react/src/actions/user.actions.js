@@ -5,10 +5,10 @@ import {
     userConstants
 } from "../constants/user.constants";
 import {
-    history
+    history,
 } from '../helpers';
 import { ChatActions } from "./chat.actions";
-
+import { store } from '../helpers/store'
 /**
  * SignUp to space-cloud API using identifiers.
  * This action will trigger a login on success.
@@ -114,9 +114,29 @@ const logout = () => {
     }
 }
 
+/**
+ * Set active user status
+ * @param {boolean} isActive 
+ * @param {number} lastActiveTime (timestamp)
+ */
+const setUserActive = (isActive, lastActiveTime) => {
+    const updateLocalUser = () => ({ type: userConstants.UPDATE_LAST_ACTIVE_TIME, lastActiveTime, isActive })
+    return dispatch => {
+        const user = store.getState().user.user
+        userService.updateUser({ ...user, lastActiveTime, isActive }).then(
+            (res) => {
+                dispatch(updateLocalUser())
+            },
+            (err) => {
+                console.log(err)
+            });
+
+    }
+}
 
 export const UserActions = {
     login,
     signup,
-    logout
+    logout,
+    setUserActive
 }

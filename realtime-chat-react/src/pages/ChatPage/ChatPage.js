@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import { ChatList, NavBar, Chat, ChatSearch } from '../../components'
@@ -6,6 +6,9 @@ import { ReactComponent as SectionBackground } from '../../assets/no_chat_loaded
 import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { ChatActions } from '../../actions/chat.actions';
+import { UserActions } from '../../actions/user.actions';
+import IdleTimer from 'react-idle-timer'
+
 import * as _ from 'lodash'
 
 const drawerWidth = 300;
@@ -55,12 +58,31 @@ const styles = theme => {
 
 const ChatPage = (props) => {
     const { classes, openedChat, opened } = props;
+    let idleTimer = null;
+
     useEffect(() => {
-        
+
     }, [props])
+
+
+    const setActive = (e) => {
+        props.updateUserActivity(true, Date.now())
+    }
+
+    const setInactive = (e) => {
+        props.updateUserActivity(false, Date.now())
+    }
 
     return (
         <div className={classes.root}>
+            <IdleTimer
+                ref={ref => { idleTimer = ref }}
+                element={document}
+                onActive={setActive}
+                onIdle={setInactive}
+                onAction={setActive}
+                debounce={250}
+                timeout={5000 } />
             <NavBar />
             < Drawer classes={{
                 paper: classes.drawerPaper,
@@ -104,7 +126,8 @@ const mapStateToProps = (state) => ({
     openedChat: _.first(_.reject(state.chat.list, (chat) => chat.user._id !== (state.chat.opened)))
 });
 const mapDispatchToProps = (dispatch) => ({
-    loadChatList: () => dispatch(ChatActions.loadChatList())
+    loadChatList: () => dispatch(ChatActions.loadChatList()),
+    updateUserActivity: (active, lastActiveTime) => dispatch(UserActions.setUserActive(active, lastActiveTime))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatPage));

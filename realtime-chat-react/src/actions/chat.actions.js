@@ -1,7 +1,7 @@
 import { ChatService } from "../services/ChatService";
 import { ChatConstants } from "../constants/chat.constants";
 import { store } from "../helpers/store";
-
+import * as _ from 'lodash'
 
 /**
  * Stop all existing livequeries.
@@ -26,7 +26,7 @@ const stopAllLiveQueries = () => {
 
         // Stop listening for new users
         const usersListener = store.getState().chat.usersListener
-        if(null !== usersListener){
+        if (null !== usersListener) {
             usersListener()
         }
     }
@@ -104,7 +104,7 @@ const listenToUsers = () => {
              * @param {*} type 
              */
             (docs, type) => {
-                // TODO
+                const changedUsers = _.differenceWith(store.getState().chat.users, docs, _.isEqual);
             },
 
             /**

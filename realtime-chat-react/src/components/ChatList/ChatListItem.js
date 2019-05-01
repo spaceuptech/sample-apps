@@ -67,7 +67,9 @@ const ChatListItem = (props) => {
             </ListItemAvatar>
             <ListItemText
                 primary={
-                    <Typography className={classes.palName}>{data.user.name} <span className={classnames(classes.activeDot, {[classes.hidden]: !data.user.isActive})}></span></Typography>
+                    <Typography className={classes.palName}>
+                    {data.user.name} <span className={classnames(classes.activeDot, {[classes.hidden]: !data.user.isActive})}></span>
+                    </Typography>
                 }
                 secondary={
                     <React.Fragment>

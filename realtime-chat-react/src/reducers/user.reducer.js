@@ -44,6 +44,14 @@ export const user = (state = initialState, action) => {
                 user: action.user,
                 token: action.token
             }
+        case (userConstants.UPDATE_LAST_ACTIVE_TIME):
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    lastActiveTime: action.lastActiveTime
+                }
+            }
 
         default:
             return state

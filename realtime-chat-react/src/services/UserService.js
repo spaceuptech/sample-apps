@@ -5,12 +5,21 @@ import {
 import {
     Observable
 } from 'rxjs/Observable';
+import { and, or, cond } from "space-api";
 
 export const rejectionCause = {
     INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
     INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'
 }
 
+/**
+ * Update user object in space-cloud
+ * @param {Object} user new user
+ */
+async function updateUser(user) {
+    await config.db.updateOne('users').where(cond('_id', '==', user._id))
+        .set(user).apply().then(res => ({ res }), err => ({ err }));
+}
 
 function login(username, password) {
 
@@ -57,5 +66,6 @@ const logout = async () => {
 export const userService = {
     signup,
     login,
-    logout
+    logout,
+    updateUser
 };
