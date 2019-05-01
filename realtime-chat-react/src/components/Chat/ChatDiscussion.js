@@ -25,16 +25,16 @@ const ChatDiscussion = (props) => {
     const { classes, className, data } = props;
     const messagesEnd = React.createRef()
 
-    useEffect(()=>{
+    useEffect(() => {
         messagesEnd.current.scrollIntoView({ behavior: 'smooth' })
-    },[props])
+    }, [props])
 
     return (
         <Grid container justify="flex-start" alignItems="center" direction="column" className={classnames(classes.root, className)}>
             <Typography className={classes.chatStartNotice}>This is the very beginning of your chat with {data.user.name}.</Typography>
             {
                 data.messages.map((message, idx) => (
-                    <ChatMessage message={message} incoming={message.from === data.user._id} key={idx} />
+                    <ChatMessage message={message} incoming={(message.from !== props.activeUser._id)} key={idx} />
                 ))
             }
             <div ref={messagesEnd} />
@@ -45,7 +45,7 @@ const ChatDiscussion = (props) => {
 
 
 const mapStateToProps = (state) => ({
-
+    activeUser: state.user.user
 });
 const mapDispatchToProps = (dispatch) => ({
     loadChatList: () => dispatch(ChatActions.loadChatList()),
