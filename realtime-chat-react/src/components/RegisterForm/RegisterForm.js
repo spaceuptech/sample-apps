@@ -74,6 +74,18 @@ const RegisterForm = (props) => {
     }, [user, password, email])
 
 
+    const handleSignup = () => {
+        if (props.signup && (canSubmit === true)) {
+            props.signup(email, user, password)
+        }
+    }
+
+    const handleKeyDown = (evt) => {
+        if (evt.key === 'Enter') {
+            handleSignup();
+        }
+    }
+
     return (
         <Grid
             container
@@ -99,6 +111,7 @@ const RegisterForm = (props) => {
                         <PermIdentityIcon className={classes.inputIcon} />
                     }
                     onChange={(event) => setUser(event.target.value)}
+                    onKeyDown={handleKeyDown}
                 />
             </Grid>
             <Grid item>
@@ -112,6 +125,7 @@ const RegisterForm = (props) => {
                         <MailIcon className={classes.inputIcon} />
                     }
                     onChange={(event) => setEmail(event.target.value)}
+                    onKeyDown={handleKeyDown}
                 />
             </Grid>
             <Grid item>
@@ -125,10 +139,16 @@ const RegisterForm = (props) => {
                         <LockIcon className={classes.inputIcon} />
                     }
                     onChange={(event) => setPassword(event.target.value)}
+                    onKeyDown={handleKeyDown}
                 />
             </Grid>
             <Grid item>
-                <Button variant="contained" color="primary" className={classes.submitButton} disabled={!canSubmit} onClick={() => signup(email, user, password)}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.submitButton}
+                    disabled={!canSubmit}
+                    onClick={() => handleSignup()}>
                     Sign up
                     </Button>
             </Grid>

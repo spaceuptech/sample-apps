@@ -60,6 +60,17 @@ const LoginForm = (props) => {
         setCanSubmit(user.length > 0 && password.length > 0)
     }, [user, password])
 
+    const handleLogin = () => {
+        if (props.login && (canSubmit === true)) {
+            props.login(user, password)
+        }
+    }
+
+    const handleKeyDown = (evt) => {
+        if (evt.key === 'Enter') {
+            handleLogin();
+        }
+    }
     return (
         <Grid
             container
@@ -85,6 +96,7 @@ const LoginForm = (props) => {
                         <MailIcon className={classes.inputIcon} />
                     }
                     onChange={(event) => setUser(event.target.value)}
+                    onKeyDown={handleKeyDown}
                 />
             </Grid>
             <Grid item>
@@ -98,10 +110,17 @@ const LoginForm = (props) => {
                         <LockIcon className={classes.inputIcon} />
                     }
                     onChange={(event) => setPassword(event.target.value)}
+                    onKeyDown={handleKeyDown}
                 />
             </Grid>
             <Grid item>
-                <Button variant="contained" color="primary" className={classes.submitButton} disabled={!canSubmit} onClick={() => login(user, password)}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.submitButton}
+                    disabled={!canSubmit}
+                    onClick={() => handleLogin()}
+                >
                     Login
                     </Button>
             </Grid>
