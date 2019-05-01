@@ -25,25 +25,65 @@ const sendMessage = (partnerID, text) => {
     })
 }
 
-const getUsers = () => {
+const getMessages = () => {
+    const user = store.getState().user.user;
+
     return Observable.create((observer) => {
-        config.db.profiles().then(res => {
+        const condition = or(cond("to", "==", user._id), cond("from", "==", user._id));
+
+        config.db.get("messages").where(condition).apply().then(res => {
             if (res.status === 200) {
-                observer.next(res.data.users)
+                let messages = {}
+
+                res.data.result.forEach((elt) => {
+                    const key = (elt.from === user._id) ? elt.to : elt.from
+                    if (!messages[key]) {
+                        messages[key] = []
+                    }
+                    messages[key].push(elt)
+                })
+                messages["ALL"] = []
+
+                observer.next(messages);
                 return;
             }
-        }).catch(ex => {
-            // Exception occured while processing request
         });
-
     });
 }
 
-const getChats = (userID) => {
+const getUsers = () => {
+    const user = store.getState().user.user;
+
+    return Observable.create((observer) => {
+        const condition = cond("_id", "!=", user._id);
+
+        config.db.get("users").where(condition).apply().then(res => {
+            if (res.status === 200) {
+                let users = convertRawUsersToHasedObject(res.data.result)
+
+                observer.next(users);
+                return;
+            }
+        });
+    });
+}
+
+const convertRawUsersToHasedObject = (rawUsers) => {
+    let users = {}
+    rawUsers.forEach((elt) => {
+        users[elt._id] = elt
+    })
+    users["ALL"] = { _id: "ALL", name: 'ALL' }
+    return users;
+}
+
+const getChats = (localUserID) => {
+    const user = store.getState().user.user;
+
     return Observable.create((observer) => {
         const condition = or(
-            cond("from", "==", userID),
-            cond("to", "==", userID),
+            cond("from", "==", user._id),
+            cond("to", "==", user._id),
             cond("to", "==", "ALL")
         );
 
@@ -72,8 +112,8 @@ const startMessagesRealtime = (partnerID) => {
     )
 }
 
-const startUsersRealtime  = () => {
-    return config.db.liveQuery("users")
+const startUsersRealtime = () => {
+    return config.db.liveQuery("users");
 }
 
 const startChatsRealtime = () => {
@@ -86,6 +126,7 @@ const startChatsRealtime = () => {
         condition
     )
 }
+
 
 const getChatsList = () => {
 
@@ -100,16 +141,16 @@ const getChatsList = () => {
         combined.subscribe(
             ([users, existingChats]) => {
                 let chats = {}
-                chats["ALL"] = {
-                    user: { name: "ALL", _id: "ALL" },
-                    messages: [
+                // chats["ALL"] = {
+                //     user: { name: "ALL", _id: "ALL" },
+                //     messages: [
 
-                    ]
-                }
-
+                //     ]
+                // }
+                console.log(existingChats)
                 existingChats.forEach(chat => {
                     if (chat.to !== 'ALL') {
-                        const partner = chat.to === userID ? chat.from : chat.to
+                        const partner = (chat.to === userID) ? chat.from : chat.to
                         if (!chats[partner]) {
                             chats[partner] = {
                                 user: _.first(users.filter((usr) => usr._id === partner)),
@@ -118,12 +159,19 @@ const getChatsList = () => {
                                 ]
                             }
                         }
+                    } else {
+                        chats["ALL"] = {
+                            user: { name: "ALL", _id: "ALL" },
+                            messages: [
+
+                            ]
+                        }
                     }
                 })
-console.log(existingChats)
+
                 // TODO
                 // chats = _.reject(chats, chat => chat.messages.length === 0)
-                chats = _.reject(chats, chat => chat.user._id === activeUser._id)
+                // chats = _.reject(chats, chat => chat.user._id === activeUser._id)
 
                 observer.next(_.values(chats))
             })
@@ -134,6 +182,9 @@ console.log(existingChats)
 
 
 export const ChatService = {
+    getChats,
+    getUsers,
+    getMessages,
     getChatsList,
     sendMessage,
     startMessagesRealtime,

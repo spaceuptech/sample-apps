@@ -6,6 +6,9 @@ const initialState = {
     isLoadingChatList: false,
     isLoadingDiscussion: false,
     list: [],
+    chats: {},
+    users: {},
+    messages: {},
     opened: ChatConstants.NO_CHAT_OPENED,
     liveQueries: [],
     chatsListener: null,
@@ -33,6 +36,39 @@ export const chat = (state = initialState, action) => {
             return {
                 ...initialState
             }
+        case ChatConstants.SET_CHATS:
+            return {
+                ...state,
+                chats: action.chats
+            }
+        case ChatConstants.SET_USERS:
+            return {
+                ...state,
+                users: action.users,
+            }
+        case ChatConstants.SET_MESSAGES:
+            return {
+                ...state,
+                messages: action.messages,
+            }
+        case ChatConstants.SET_PARTNER_MESSAGES:
+            return {
+                ...state,
+                messages: {
+                    ...state.messages,
+                    [action.partnerID]: action.messages
+                } 
+                // state.messages.map(
+                //     (content, idx) => (idx === action.partnerID) ? action.messages: content
+                // )
+                
+                // _.findIndex(state.messages, action.partnerID)
+                // state.messages
+                // [
+                //     ...state.messages,
+                //     state.messages[action.partnerID]: action.messages
+                // ],
+            }
         case ChatConstants.SET_INCOMING_USERS_LISTENER:
             return {
                 ...state,
@@ -58,7 +94,7 @@ export const chat = (state = initialState, action) => {
                 ...state,
                 isLoadingChatList: true
             }
-        case ChatConstants.LOAD_LIST_SUCCESS:
+        case ChatConstants.SET_DISCUSSIONS_LIST:
             return {
                 ...state,
                 isLoadingChatList: false,
@@ -80,8 +116,8 @@ export const chat = (state = initialState, action) => {
             return {
                 ...state,
                 isLoadingDiscussion: false,
-                opened: state.list.findIndex((elt) => elt.user._id === action.id)
-                // opened: action.id
+                // opened: state.list.findIndex((elt) => elt.user._id === action.id)
+                opened: action.id
                 // opened: _.first(_.reject(state.list, chat => chat.user._id !== action.id))
             }
         case ChatConstants.SAVE_LIVE_QUERY:

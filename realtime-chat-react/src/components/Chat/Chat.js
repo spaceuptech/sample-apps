@@ -46,35 +46,34 @@ const styles = theme => ({
 });
 
 const Chat = (props) => {
-    const { classes, sendMessage, chatsList, opened } = props;
+    const { classes, sendMessage, chatsList, opened, partner } = props;
     const [data, setData] = useState(chatsList[opened])
-
     useEffect(() => {
-        setData(props.chatsList[props.opened])
+        // setData(props.chatsList[props.opened])
     }, [props])
 
     return (
         <div className={classes.root}>
-            <ChatHeader user={data.user} />
+            <ChatHeader user={partner} />
             <Grid className={classes.chat}>
                 {/* <Grid container direction="column"
                     alignItems="baseline"
                     style={{ overflow: 'auto' }} className={classes.chat}> */}
-                    <ChatDiscussion data={data} className={classes.discussion}/>
+                    <ChatDiscussion messages={props.messages[partner._id]} partner={partner} className={classes.discussion}/>
                 {/* </Grid> */}
                 <ChatSend item className={classes.sendBox} 
-                    onSubmit={text => sendMessage(data.user._id, text)} />
+                    onSubmit={text => sendMessage(partner._id, text)} />
             </Grid>
         </div>
     )
 }
 
 const mapStateToProps = (state) => ({
+    messages: state.chat.messages,
     chatsList: state.chat.list,
     opened: state.chat.opened
 });
 const mapDispatchToProps = (dispatch) => ({
-    loadChatList: () => dispatch(ChatActions.loadChatList()),
     sendMessage: (id, text) => dispatch(ChatActions.sendMessage(id, text))
 });
 

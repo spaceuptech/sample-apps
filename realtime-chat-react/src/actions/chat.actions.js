@@ -1,7 +1,6 @@
 import { ChatService } from "../services/ChatService";
 import { ChatConstants } from "../constants/chat.constants";
 import { store } from "../helpers/store";
-import * as _ from 'lodash'
 
 /**
  * Stop all existing livequeries.
@@ -59,9 +58,9 @@ const addChat = (chat) => ({
  * @param {Object} chat 
  * @authenticated
  */
-const listenToThread = (chat) => {
+const listenToThread = (partnerID) => {
     return dispatch => {
-        const currentLiveQuery = ChatService.startMessagesRealtime(chat.user._id).subscribe(
+        const currentLiveQuery = ChatService.startMessagesRealtime(partnerID).subscribe(
             /**
              * Callback triggered on new messages in given thread
              * @param {Array<Object>} docs 
@@ -69,9 +68,10 @@ const listenToThread = (chat) => {
              */
             (docs, type) => {
                 // TODO 8byr0 compare incoming list with existing to append only new messages
+                const messages = docs
 
                 if (docs.length > 0) {
-                    dispatch(setDiscussionMessages(chat, docs))
+                    dispatch({ type: ChatConstants.SET_PARTNER_MESSAGES, partnerID: partnerID, messages: messages })
                 }
 
             },
@@ -103,8 +103,15 @@ const listenToUsers = () => {
              * @param {Array<Object>} docs 
              * @param {*} type 
              */
-            (docs, type) => {
-                const changedUsers = _.differenceWith(store.getState().chat.users, docs, _.isEqual);
+            (rawUsers, type) => {
+                let users = {}
+
+                rawUsers.forEach((elt) => {
+                    users[elt._id] = elt
+                })
+                users["ALL"] = { _id: "ALL", name: 'ALL' }
+
+                dispatch({ type: ChatConstants.SET_USERS, users });
             },
 
             /**
@@ -112,7 +119,7 @@ const listenToUsers = () => {
              * @param {*} err
              */
             (err) => {
-                // TODO
+                // TODO handle this
             })
 
         dispatch({
@@ -137,7 +144,8 @@ const listenToChats = () => {
              * @param {*} type 
              */
             (docs, type) => {
-
+                dispatch({type: ChatConstants.SET_CHATS, docs})
+                // console.log("Chats list has been updated", docs)
             },
 
             /**
@@ -145,7 +153,7 @@ const listenToChats = () => {
              * @param {*} err
              */
             (err) => {
-
+                // TODO handle this
             })
 
         dispatch({
@@ -155,69 +163,67 @@ const listenToChats = () => {
     }
 }
 
-
-/**
- * Load initial list of chats
- * Will be fetched from space-cloud
- * @authenticated
- */
-const loadChatList = () => {
+const retrieveUsers = (launchRealTime = false) => {
     return dispatch => {
-        dispatch({ type: ChatConstants.LOAD_LIST_REQUEST });
+        ChatService.getUsers().subscribe(
+            (users) => {
+                users["ALL"] = { _id: "ALL", name: 'ALL' }
 
-        ChatService.getChatsList().subscribe(
-            list => {
-                // Dispatch fetched list of chats
-                dispatch({
-                    type: ChatConstants.LOAD_LIST_SUCCESS,
-                    list
-                });
+                dispatch({ type: ChatConstants.SET_USERS, users });
+                if (launchRealTime === true) {
+                    dispatch(listenToUsers())
+                    for (const userID in users) {
+                        dispatch(listenToThread(userID))
 
-                list.forEach((elt) => {
-                    // For each discussion start listening to incoming messages
-                    dispatch(listenToThread(elt))
-                })
-
-                // Listen to newly created chats
-                dispatch(listenToChats())
-
-                // Listen to newly created users
-                dispatch(listenToUsers())
+                    }
+                }
             },
+            (error) => { }
+        )
+    }
+}
+const retrieveChats = () => {
+    return dispatch => {
+        ChatService.getChats().subscribe(
+            (chats) => { dispatch({ type: ChatConstants.SET_CHATS, chats }) },
             (error) => {
-                dispatch({
-                    type: ChatConstants.LOAD_LIST_FAILURE,
-                    error: error.toString()
-                });
+                // TODO HANDLE THIS
+             }
+        )
+    }
+}
+const retrieveMessages = () => {
+    return dispatch => {
+        ChatService.getMessages().subscribe(
+            (messages) => {
+                dispatch({ type: ChatConstants.SET_MESSAGES, messages })
+            },
+            (error) => { 
+                // TODO handle this
             }
-        );
-    };
+        )
+    }
 }
 
-/**
- * Set the messages of a given chat
- * @param {Object} chat 
- * @param {Array<Object>} messages 
- */
-const setDiscussionMessages = (chat, messages) => {
-    return {
-        type: ChatConstants.REFRESH_MESSAGES,
-        discussion: chat,
-        messages: messages
+const loadInitialData = () => {
+    return dispatch => {
+        dispatch(retrieveChats());
+        dispatch(retrieveUsers(true));
+        dispatch(retrieveMessages());
     }
 }
 
 /**
  * Set the active chat of the app
  * TODO pass only id instead of full object
- * @param {Object} chat 
+ * @param {string} partnerID 
  */
-const openDiscussion = (chat) => {
+const openDiscussion = (partnerID) => {
     return dispatch => {
         dispatch({ type: ChatConstants.OPEN_DISCUSSION_REQUEST });
         dispatch({
             type: ChatConstants.OPEN_DISCUSSION_SUCCESS,
-            id: chat.user._id
+            id: partnerID
         });
     };
 }
@@ -247,7 +253,7 @@ const sendMessage = (partnerID, text) => {
 }
 
 export const ChatActions = {
-    loadChatList,
+    loadInitialData,
     openDiscussion,
     sendMessage,
     stopAllLiveQueries,

@@ -26,7 +26,7 @@ const styles = theme => ({
         cursor: 'pointer',
         '&:hover': {
             background: "#F0F0F0",
-         },
+        },
     },
     palName: {
         fontWeight: 'bold'
@@ -40,7 +40,7 @@ const styles = theme => ({
         border: '1px solid #51DB98',
     },
     hidden: {
-        display:'none'
+        display: 'none'
     },
     avatar: {
         margin: 10,
@@ -52,28 +52,32 @@ const styles = theme => ({
 
 
 const ChatListItem = (props) => {
-    const { classes, data, openDiscussion, active } = props;
-    
-    const [excerpt, setExcerpt] = useState(_.last(data.messages.text))
-
-    useEffect(()=>{
-        setExcerpt(_.last(props.data.messages))
-    },[props.data])
+    const { classes, openDiscussion, active, partner: incomingPartner } = props;
+    const [excerpt, setExcerpt] = useState("")
+    const [partner, setPartner] = useState({})
+    useEffect(() => {
+        if (props.partner) {
+            setExcerpt(_.last(props.messages[props.partner._id]))
+            setPartner(props.partner)
+        }
+    }, [props])
 
     return (
-        <ListItem alignItems="flex-start" className={classnames(classes.container, { [classes.active]: active })} onClick={() => openDiscussion(data)}>
+        <ListItem alignItems="flex-start"
+            className={classnames(classes.container, { [classes.active]: (props.openedChat === partner._id) })}
+            onClick={() => openDiscussion(partner._id)}>
             <ListItemAvatar>
-                {<Avatar className={classes.avatar}>{data.user.name.charAt(0)}</Avatar>}
+                {<Avatar className={classes.avatar}>{partner.name ? partner.name.charAt(0) : ""}</Avatar>}
             </ListItemAvatar>
             <ListItemText
                 primary={
                     <Typography className={classes.palName}>
-                    {data.user.name} <span className={classnames(classes.activeDot, {[classes.hidden]: !data.user.isActive})}></span>
+                        {partner.name} <span className={classnames(classes.activeDot, { [classes.hidden]: !partner.isActive })}></span>
                     </Typography>
                 }
                 secondary={
                     <React.Fragment>
-                        {excerpt?excerpt.text:"Empty chat"}
+                        {excerpt ? excerpt.text : "Empty chat"}
                     </React.Fragment>
                 }
             />
@@ -83,11 +87,11 @@ const ChatListItem = (props) => {
 
 
 const mapStateToProps = (state) => ({
-    
+    openedChat: state.chat.opened,
+    messages: state.chat.messages
 });
 const mapDispatchToProps = (dispatch) => ({
-    loadChatList: () => dispatch(ChatActions.loadChatList()),
-    openDiscussion: (chatData) => dispatch(ChatActions.openDiscussion(chatData))
+    openDiscussion: (partnerID) => dispatch(ChatActions.openDiscussion(partnerID))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatListItem));

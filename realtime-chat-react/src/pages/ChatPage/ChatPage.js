@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import { ChatList, NavBar, Chat, ChatSearch } from '../../components'
 import { ReactComponent as SectionBackground } from '../../assets/no_chat_loaded_background.svg';
 import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
-import { ChatActions } from '../../actions/chat.actions';
 import { UserActions } from '../../actions/user.actions';
 import IdleTimer from 'react-idle-timer'
 
-import * as _ from 'lodash'
 
 const drawerWidth = 300;
 
@@ -57,13 +55,8 @@ const styles = theme => {
 };
 
 const ChatPage = (props) => {
-    const { classes, openedChat, opened } = props;
+    const { classes, opened } = props;
     let idleTimer = null;
-
-    useEffect(() => {
-
-    }, [props])
-
 
     const setActive = (e) => {
         props.updateUserActivity(true, Date.now())
@@ -112,7 +105,7 @@ const ChatPage = (props) => {
                             </Grid>
                         </Grid>
                         :
-                        <Chat content={openedChat} />
+                        <Chat partner={props.users[opened]} />
                 }
 
             </main>
@@ -121,12 +114,14 @@ const ChatPage = (props) => {
 }
 
 const mapStateToProps = (state) => ({
+    messages: state.chat.messages,
+    users: state.chat.users,
     chatsList: state.chat.list,
     opened: state.chat.opened,
-    openedChat: _.first(_.reject(state.chat.list, (chat) => chat.user._id !== (state.chat.opened)))
+    openedChat: {}
+    // openedChat: _.first(_.reject(state.chat.list, (chat) => chat.user._id !== (state.chat.opened)))
 });
 const mapDispatchToProps = (dispatch) => ({
-    loadChatList: () => dispatch(ChatActions.loadChatList()),
     updateUserActivity: (active, lastActiveTime) => dispatch(UserActions.setUserActive(active, lastActiveTime))
 });
 

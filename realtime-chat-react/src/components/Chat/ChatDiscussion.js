@@ -22,7 +22,7 @@ const styles = theme => ({
 });
 
 const ChatDiscussion = (props) => {
-    const { classes, className, data } = props;
+    const { classes, className, messages, partner } = props;
     const messagesEnd = React.createRef()
 
     useEffect(() => {
@@ -31,9 +31,9 @@ const ChatDiscussion = (props) => {
 
     return (
         <Grid container justify="flex-start" alignItems="center" direction="column" className={classnames(classes.root, className)}>
-            <Typography className={classes.chatStartNotice}>This is the very beginning of your chat with {data.user.name}.</Typography>
+            <Typography className={classes.chatStartNotice}>This is the very beginning of your chat with {partner.name}.</Typography>
             {
-                data.messages.map((message, idx) => (
+                messages.map((message, idx) => (
                     <ChatMessage message={message} incoming={(message.from !== props.activeUser._id)} key={idx} />
                 ))
             }
@@ -48,7 +48,6 @@ const mapStateToProps = (state) => ({
     activeUser: state.user.user
 });
 const mapDispatchToProps = (dispatch) => ({
-    loadChatList: () => dispatch(ChatActions.loadChatList()),
     sendMessage: (id, text) => dispatch(ChatActions.sendMessage(id, text))
 });
 

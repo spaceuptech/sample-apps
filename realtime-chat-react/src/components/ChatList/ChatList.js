@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ChatListItem from './ChatListItem';
@@ -19,24 +19,19 @@ const styles = theme => ({
 });
 
 const ChatList = (props) => {
-    const { classes, chatsList } = props;
+    const { classes, chats } = props;
 
-    const [activeChatID, setActiveChatID] = useState(ChatConstants.NO_CHAT_OPENED)
-
-    useEffect(() => {
-        if (props.opened !== ChatConstants.NO_CHAT_OPENED) {
-            setActiveChatID(props.chatsList[props.opened]._id)
-        }
-    }, [props])
-
-    useEffect(() => props.loadChatList(), []);
+    useEffect(() => { props.loadInitial() }, []);
 
     return (
         <List className={classnames(classes.root, props.className)}>
             {
-                (chatsList.length > 0) ?
-                    chatsList.map((entry, idx) => (
-                            <ChatListItem key={idx} data={entry} active={props.opened === idx} />
+                (chats.length > 0) ?
+                    chats.map((entry, idx) => (
+                        <ChatListItem
+                            key={idx}
+                            active={props.opened === entry._id}
+                            partner={props.users[(entry.from === props.loggedUserID) ? entry.to : entry.from]} />
                     )) :
                     <Typography>No chat started yet</Typography>
             }
@@ -45,11 +40,13 @@ const ChatList = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    chatsList: state.chat.list,
+    loggedUserID: state.user.user._id, // a list of Chat objects 
+    users: state.chat.users, // a list of Chat objects 
+    chats: state.chat.chats, // a list of Chat objects 
     opened: state.chat.opened
 });
 const mapDispatchToProps = (dispatch) => ({
-    loadChatList: () => dispatch(ChatActions.loadChatList())
+    loadInitial: () => dispatch(ChatActions.loadInitialData()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatList));
