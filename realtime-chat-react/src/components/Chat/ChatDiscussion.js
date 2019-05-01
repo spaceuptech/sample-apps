@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
 import ChatMessage from './ChatMessage';
-import classNames from 'classnames'
+import classnames from 'classnames'
 
 import { ChatActions } from '../../actions/chat.actions';
 import { connect } from 'react-redux'
@@ -30,7 +30,7 @@ const ChatDiscussion = (props) => {
     },[props])
 
     return (
-        <Grid container justify="flex-start" alignItems="center" direction="column" className={classNames(classes.root, className)}>
+        <Grid container justify="flex-start" alignItems="center" direction="column" className={classnames(classes.root, className)}>
             <Typography className={classes.chatStartNotice}>This is the very beginning of your chat with {data.user.name}.</Typography>
             {
                 data.messages.map((message, idx) => (

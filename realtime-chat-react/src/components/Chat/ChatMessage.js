@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import { Typography } from '@material-ui/core';
-import classNames from 'classnames';
+import classnames from 'classnames';
 
 
 const styles = theme => ({
@@ -61,7 +61,7 @@ const Chat = (props) => {
             direction="column"
             className={classes.root}
         >
-            <Grid item className={classNames(classes.messageContainer, { [classes.incoming]: props.incoming }, { [classes.outgoing]: !props.incoming })}>
+            <Grid item className={classnames(classes.messageContainer, { [classes.incoming]: props.incoming }, { [classes.outgoing]: !props.incoming })}>
                 <Typography className={classes.messageText}>{message.text}</Typography>
 
                 <Grid container
@@ -69,7 +69,7 @@ const Chat = (props) => {
                     alignItems="flex-end"
                     direction="row"
                 >
-                    <Typography className={classes.messageHour}>{formatDate()}<DoneAllIcon className={classNames(classes.messageViewed, { [classes.hidden]: props.incoming || !message.read })} /></Typography>
+                    <Typography className={classes.messageHour}>{formatDate()}<DoneAllIcon className={classnames(classes.messageViewed, { [classes.hidden]: props.incoming || !message.read })} /></Typography>
                 </Grid>
             </Grid>
         </Grid>

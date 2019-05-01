@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames'
+import classnames from 'classnames'
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
@@ -8,7 +8,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Typography } from '@material-ui/core';
 import { ChatActions } from '../../actions/chat.actions';
 import { connect } from 'react-redux'
-import classnames from 'classnames'
 import * as _ from 'lodash'
 
 const styles = theme => ({
@@ -62,7 +61,7 @@ const ChatListItem = (props) => {
     },[props.data])
 
     return (
-        <ListItem alignItems="flex-start" className={classNames(classes.container, { [classes.active]: active })} onClick={() => openDiscussion(data)}>
+        <ListItem alignItems="flex-start" className={classnames(classes.container, { [classes.active]: active })} onClick={() => openDiscussion(data)}>
             <ListItemAvatar>
                 {<Avatar className={classes.avatar}>{data.user.name.charAt(0)}</Avatar>}
             </ListItemAvatar>

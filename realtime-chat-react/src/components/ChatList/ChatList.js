@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ChatListItem from './ChatListItem';
-import classNames from 'classnames'
+import classnames from 'classnames'
 import { ChatActions } from '../../actions/chat.actions';
 import { connect } from 'react-redux'
 import { Typography } from '@material-ui/core';
@@ -32,7 +32,7 @@ const ChatList = (props) => {
     useEffect(() => props.loadChatList(), []);
 
     return (
-        <List className={classNames(classes.root, props.className)}>
+        <List className={classnames(classes.root, props.className)}>
             {
                 (chatsList.length > 0) ?
                     chatsList.map((entry, idx) => (
