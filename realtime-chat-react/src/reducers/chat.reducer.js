@@ -46,7 +46,7 @@ export const chat = (state = initialState, action) => {
         case ChatConstants.SET_INCOMING_CHATS_LISTENER:
             return {
                 ...state,
-                chatListener: action.listener
+                chatsListener: action.listener
             }
         case ChatConstants.REMOVE_INCOMING_CHATS_LISTENER:
             return {
