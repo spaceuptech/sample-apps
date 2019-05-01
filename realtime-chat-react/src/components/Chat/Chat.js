@@ -62,7 +62,8 @@ const Chat = (props) => {
                     style={{ overflow: 'auto' }} className={classes.chat}> */}
                     <ChatDiscussion data={data} className={classes.discussion}/>
                 {/* </Grid> */}
-                <ChatSend item className={classes.sendBox} onSubmit={text => sendMessage(data.user._id, text)} />
+                <ChatSend item className={classes.sendBox} 
+                    onSubmit={text => sendMessage(data.user._id, text)} />
             </Grid>
         </div>
     )

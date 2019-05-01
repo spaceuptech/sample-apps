@@ -5,6 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import { Input } from '@material-ui/core';
 import { ReactComponent as SendLogo } from '../../assets/send_icon.svg';
 import IconButton from '@material-ui/core/IconButton';
+import classnames from 'classnames'
+
 
 const styles = theme => ({
     root: {
@@ -23,15 +25,27 @@ const styles = theme => ({
     },
     sendButton: {
         cursor: 'pointer'
+    },
+    buttonEnabled: {
+        fill: theme.palette.primary.main
+    },
+    buttonDisabled: {
+        fill: '#d3d3d3'
     }
 });
 
 const ChatSend = (props) => {
     const { classes } = props;
     const [messageText, setMessageText] = useState("")
+    const [canSend, setCanSend] = useState(false)
+
+    const handleTextChange = (value)=>{
+        setMessageText(value)
+        setCanSend(value.length > 0)
+    }
 
     const handleSend = () => {
-        if (props.onSubmit) {
+        if (props.onSubmit && (canSend === true)) {
             props.onSubmit(messageText)            
             setMessageText("")
         }
@@ -49,10 +63,10 @@ const ChatSend = (props) => {
                 value={messageText}
                 placeholder="Type your message..."
                 disableUnderline={true}
-                onChange={evt => setMessageText(evt.target.value)}
+                onChange={evt => handleTextChange(evt.target.value)}
                 endAdornment={
                     <IconButton color="primary" component="span" onClick={handleSend}  disabled={!messageText.length > 0}>
-                        <SendLogo />
+                        <SendLogo className={classnames({[classes.buttonDisabled]:!canSend},{[classes.buttonEnabled]:canSend})}/>
                     </IconButton>
                 }
                 onKeyDown={handleKeyDown}
