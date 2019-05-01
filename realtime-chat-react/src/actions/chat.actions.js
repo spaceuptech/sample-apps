@@ -19,9 +19,16 @@ const stopAllLiveQueries = () => {
         })
 
         // Stop listening for new chats
-        store.getState().chat.chatsListener()
+        const chatsListener = store.getState().chat.chatsListener
+        if (null !== chatsListener) {
+            chatsListener()
+        }
+
         // Stop listening for new users
-        store.getState().chat.usersListener()
+        const usersListener = store.getState().chat.usersListener
+        if(null !== usersListener){
+            usersListener()
+        }
     }
 }
 
