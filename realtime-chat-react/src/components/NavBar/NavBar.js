@@ -44,7 +44,7 @@ const NavBar = (props) => {
                         </Grid>
                         <Grid item>
                             <Typography variant="h6" color="inherit" className={classes.grow}>
-                                WhatsApp Clone
+                                Space Chat
                  </Typography>
                         </Grid>
                     </Grid>
