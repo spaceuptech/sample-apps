@@ -6,7 +6,6 @@ import classnames from 'classnames'
 import { ChatActions } from '../../actions/chat.actions';
 import { connect } from 'react-redux'
 import { Typography } from '@material-ui/core';
-import { ChatConstants } from '../../constants/chat.constants';
 
 
 const styles = theme => ({
@@ -20,7 +19,6 @@ const styles = theme => ({
 
 const ChatList = (props) => {
     const { classes, chats } = props;
-
     useEffect(() => { props.loadInitial() }, []);
 
     return (
@@ -31,7 +29,7 @@ const ChatList = (props) => {
                         <ChatListItem
                             key={idx}
                             active={props.opened === entry._id}
-                            partner={props.users[(entry.from === props.loggedUserID) ? entry.to : entry.from]} />
+                            partner={props.users[(entry.from === props.loggedUserID || entry.to === "ALL") ? entry.to : entry.from]} />
                     )) :
                     <Typography>No chat started yet</Typography>
             }
@@ -40,9 +38,9 @@ const ChatList = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    loggedUserID: state.user.user._id, // a list of Chat objects 
-    users: state.chat.users, // a list of Chat objects 
-    chats: state.chat.chats, // a list of Chat objects 
+    loggedUserID: state.user.user ? state.user.user._id : null, 
+    users: state.chat.users, 
+    chats: state.chat.chats,  
     opened: state.chat.opened
 });
 const mapDispatchToProps = (dispatch) => ({

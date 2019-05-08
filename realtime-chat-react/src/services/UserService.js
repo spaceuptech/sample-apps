@@ -5,7 +5,7 @@ import {
 import {
     Observable
 } from 'rxjs/Observable';
-import { and, or, cond } from "space-api";
+import { cond } from "space-api";
 
 export const rejectionCause = {
     INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
@@ -18,7 +18,7 @@ export const rejectionCause = {
  */
 async function updateUser(user) {
     await config.db.updateOne('users').where(cond('_id', '==', user._id))
-        .set(user).apply().then(res => ({ res }), err => ({ err }));
+        .set(user).apply().then(res => ({ res })).catch(err => { throw err });
 }
 
 function login(username, password) {
@@ -35,7 +35,7 @@ function login(username, password) {
 
 
             } else {
-                observer.error("Unable to sign in")
+                observer.error("Unable to sign in: " + res.data.error)
             }
         })
     })
@@ -52,7 +52,7 @@ function signup(email, username, password) {
                     token: res.data.token
                 })
             } else {
-                observer.error("Unable to sign up")
+                observer.error("Unable to sign up: " + res.data.error)
             }
         })
     })

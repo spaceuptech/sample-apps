@@ -56,26 +56,24 @@ const styles = theme => {
 
 const ChatPage = (props) => {
     const { classes, opened } = props;
-    let idleTimer = null;
 
-    const setActive = (e) => {
+    const setActive = () => {
         props.updateUserActivity(true, Date.now())
     }
 
-    const setInactive = (e) => {
+    const setInactive = () => {
         props.updateUserActivity(false, Date.now())
     }
 
     return (
         <div className={classes.root}>
             <IdleTimer
-                ref={ref => { idleTimer = ref }}
                 element={document}
                 onActive={setActive}
                 onIdle={setInactive}
                 onAction={setActive}
                 debounce={250}
-                timeout={5000 } />
+                timeout={5000} />
             <NavBar />
             < Drawer classes={{
                 paper: classes.drawerPaper,
@@ -118,7 +116,6 @@ const mapStateToProps = (state) => ({
     users: state.chat.users,
     chatsList: state.chat.list,
     opened: state.chat.opened,
-    openedChat: {}
     // openedChat: _.first(_.reject(state.chat.list, (chat) => chat.user._id !== (state.chat.opened)))
 });
 const mapDispatchToProps = (dispatch) => ({

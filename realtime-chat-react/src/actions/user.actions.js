@@ -9,6 +9,7 @@ import {
 } from '../helpers';
 import { ChatActions } from "./chat.actions";
 import { store } from '../helpers/store'
+import { notificationActions } from "./notifications.actions";
 /**
  * SignUp to space-cloud API using identifiers.
  * This action will trigger a login on success.
@@ -30,9 +31,8 @@ const signup = (email, username, password) => {
     }
 
     const failure = (reason) => {
-        return {
-            type: userConstants.REGISTER_FAILURE,
-            reason
+        return dispatch => {
+            dispatch(notificationActions.failureMessage(reason))
         }
     }
     return dispatch => {
@@ -44,7 +44,6 @@ const signup = (email, username, password) => {
                 dispatch(login(email, password))
             },
             (error) => {
-                console.log("ERROR DURING REGISTER", error)
                 dispatch(failure(error.toString()));
             }
         );
@@ -72,9 +71,8 @@ const login = (username, password) => {
     }
 
     const loginFailure = (reason) => {
-        return {
-            type: userConstants.LOGIN_FAILURE,
-            reason
+        return dispatch => {
+            dispatch(notificationActions.failureMessage(reason))
         }
     }
     return dispatch => {
@@ -88,7 +86,6 @@ const login = (username, password) => {
                 history.push('/')
             },
             (error) => {
-                console.log("ERROR LOGGING IN", error)
                 dispatch(loginFailure(error.toString()));
             }
         );
@@ -109,8 +106,7 @@ const logout = () => {
             type: userConstants.LOGOUT
         })
         history.push('/login')
-
-
+        dispatch(notificationActions.infoMessage("You've been successfully logged out!"))
     }
 }
 
@@ -126,9 +122,10 @@ const setUserActive = (isActive, lastActiveTime) => {
         userService.updateUser({ ...user, lastActiveTime, isActive }).then(
             (res) => {
                 dispatch(updateLocalUser())
-            },
+            }
+        ).catch(
             (err) => {
-                console.log(err)
+                dispatch(notificationActions.failureMessage("Error while trying to update user status. Details: " + err))
             });
 
     }

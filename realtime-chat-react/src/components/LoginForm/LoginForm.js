@@ -51,7 +51,7 @@ const styles = theme => {
 };
 
 const LoginForm = (props) => {
-    const { classes, login } = props;
+    const { classes } = props;
     const [user, setUser] = useState("")
     const [password, setPassword] = useState("")
     const [canSubmit, setCanSubmit] = useState(false)

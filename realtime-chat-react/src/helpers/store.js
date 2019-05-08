@@ -4,12 +4,21 @@ import { createLogger } from 'redux-logger';
 import rootReducer from '../reducers';
 
 const loggerMiddleware = createLogger();
- 
-export const store = createStore(
-    rootReducer, 
+
+// if you want to debug redux and see which actions are triggered, set to true 
+const enableLogger = false;
+
+let middlewares = enableLogger ?
     applyMiddleware(
         thunkMiddleware,
-        // loggerMiddleware
+        loggerMiddleware
+    ) :
+    applyMiddleware(
+        thunkMiddleware
     )
+
+export const store = createStore(
+    rootReducer,
+    middlewares
 );
 

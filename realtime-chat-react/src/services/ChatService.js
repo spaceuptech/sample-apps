@@ -1,34 +1,30 @@
-import { Observable } from 'rxjs/Observable';
-import { combineLatest } from 'rxjs';
 import { store } from '../helpers/store';
 import { and, or, cond } from "space-api";
-import * as _ from 'lodash'
 import { config } from './config';
 
 
 const sendMessage = (partnerID, text) => {
-    // Get the input field values
-    return Observable.create((observer) => {
+    return new Promise((resolve, reject) => {
         const user = store.getState().user.user;
 
-        // Add todo to the database
         config.db.insert("messages")
             .one({ _id: config.generateId(), text: text, read: false, to: partnerID, from: user._id, time: new Date() })
             .then(res => {
                 // Verify if get request is successful
                 if (res.status !== 200) {
-                    console.log("Error occurred")
-                    return;
+                    reject("User not allowed to sign in");
                 }
-                observer.next(res)
+                resolve(res);
+            }).catch((error) => {
+                reject(error);
             });
-    })
+    });
 }
 
 const getMessages = () => {
-    const user = store.getState().user.user;
+    return new Promise((resolve, reject) => {
+        const user = store.getState().user.user;
 
-    return Observable.create((observer) => {
         const condition = or(cond("to", "==", user._id), cond("from", "==", user._id));
 
         config.db.get("messages").where(condition).apply().then(res => {
@@ -44,26 +40,27 @@ const getMessages = () => {
                 })
                 messages["ALL"] = []
 
-                observer.next(messages);
-                return;
+                resolve(messages);
             }
+        }).catch((err) => {
+            reject(err);
         });
     });
 }
 
 const getUsers = () => {
-    const user = store.getState().user.user;
-
-    return Observable.create((observer) => {
+    return new Promise((resolve, reject) => {
+        const user = store.getState().user.user;
         const condition = cond("_id", "!=", user._id);
 
         config.db.get("users").where(condition).apply().then(res => {
             if (res.status === 200) {
                 let users = convertRawUsersToHasedObject(res.data.result)
 
-                observer.next(users);
-                return;
+                resolve(users);
             }
+        }).catch((err) => {
+            reject(err)
         });
     });
 }
@@ -77,26 +74,23 @@ const convertRawUsersToHasedObject = (rawUsers) => {
     return users;
 }
 
-const getChats = (localUserID) => {
-    const user = store.getState().user.user;
+const getChats = () => {
+    return new Promise((resolve, reject) => {
+        const user = store.getState().user.user;
 
-    return Observable.create((observer) => {
         const condition = or(
             cond("from", "==", user._id),
             cond("to", "==", user._id),
             cond("to", "==", "ALL")
         );
 
-        config.db.get("chats").where(condition).apply().then(res => {
+        config.db.get("chats").where(condition).apply().then((res) => {
             if (res.status === 200) {
-                observer.next(res.data.result);
-                return;
+                resolve(res.data.result);
             }
-        })
-            .catch(ex => {
-                // Exception occured while processing request
-            });
-
+        }).catch((err) => {
+            reject(err);
+        });
     });
 }
 
@@ -127,65 +121,11 @@ const startChatsRealtime = () => {
     )
 }
 
-
-const getChatsList = () => {
-
-    return Observable.create((observer) => {
-        const activeUser = store.getState().user.user;
-
-        let userID = activeUser._id
-        const fetchUsers$ = getUsers(userID)
-        const fetchChats$ = getChats(userID)
-
-        const combined = combineLatest(fetchUsers$, fetchChats$);
-        combined.subscribe(
-            ([users, existingChats]) => {
-                let chats = {}
-                // chats["ALL"] = {
-                //     user: { name: "ALL", _id: "ALL" },
-                //     messages: [
-
-                //     ]
-                // }
-                console.log(existingChats)
-                existingChats.forEach(chat => {
-                    if (chat.to !== 'ALL') {
-                        const partner = (chat.to === userID) ? chat.from : chat.to
-                        if (!chats[partner]) {
-                            chats[partner] = {
-                                user: _.first(users.filter((usr) => usr._id === partner)),
-                                messages: [
-
-                                ]
-                            }
-                        }
-                    } else {
-                        chats["ALL"] = {
-                            user: { name: "ALL", _id: "ALL" },
-                            messages: [
-
-                            ]
-                        }
-                    }
-                })
-
-                // TODO
-                // chats = _.reject(chats, chat => chat.messages.length === 0)
-                // chats = _.reject(chats, chat => chat.user._id === activeUser._id)
-
-                observer.next(_.values(chats))
-            })
-
-    });
-}
-
-
-
 export const ChatService = {
     getChats,
     getUsers,
     getMessages,
-    getChatsList,
+    // getChatsList,
     sendMessage,
     startMessagesRealtime,
     startChatsRealtime,

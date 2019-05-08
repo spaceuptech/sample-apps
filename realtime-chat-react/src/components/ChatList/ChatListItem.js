@@ -52,7 +52,7 @@ const styles = theme => ({
 
 
 const ChatListItem = (props) => {
-    const { classes, openDiscussion, active, partner: incomingPartner } = props;
+    const { classes, openDiscussion} = props;
     const [excerpt, setExcerpt] = useState("")
     const [partner, setPartner] = useState({})
     useEffect(() => {

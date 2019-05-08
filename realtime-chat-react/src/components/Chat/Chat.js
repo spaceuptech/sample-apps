@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import ChatHeader from './ChatHeader';
@@ -25,9 +25,9 @@ const styles = theme => ({
         display: 'flex',
         flexFlow: 'column',
     },
-    discussion:{
-        flexGrow:1,
-        overflow:'auto'
+    discussion: {
+        flexGrow: 1,
+        overflow: 'auto'
     },
     root: {
         background: '#F5F5F5',
@@ -46,22 +46,14 @@ const styles = theme => ({
 });
 
 const Chat = (props) => {
-    const { classes, sendMessage, chatsList, opened, partner } = props;
-    const [data, setData] = useState(chatsList[opened])
-    useEffect(() => {
-        // setData(props.chatsList[props.opened])
-    }, [props])
+    const { classes, sendMessage, partner } = props;
 
     return (
         <div className={classes.root}>
             <ChatHeader user={partner} />
             <Grid className={classes.chat}>
-                {/* <Grid container direction="column"
-                    alignItems="baseline"
-                    style={{ overflow: 'auto' }} className={classes.chat}> */}
-                    <ChatDiscussion messages={props.messages[partner._id]} partner={partner} className={classes.discussion}/>
-                {/* </Grid> */}
-                <ChatSend item className={classes.sendBox} 
+                <ChatDiscussion messages={props.messages[partner._id]} partner={partner} className={classes.discussion} />
+                <ChatSend item className={classes.sendBox}
                     onSubmit={text => sendMessage(partner._id, text)} />
             </Grid>
         </div>

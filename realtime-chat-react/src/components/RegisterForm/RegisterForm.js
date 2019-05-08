@@ -10,7 +10,7 @@ import { UserActions } from '../../actions/user.actions';
 import { connect } from 'react-redux';
 
 
-const styles = theme => {
+const styles = (theme) => {
     return {
         root: {
             display: 'flex',
@@ -50,21 +50,20 @@ const styles = theme => {
 };
 
 const RegisterForm = (props) => {
-    const { classes, signup } = props;
+    const { classes } = props;
     const [email, setEmail] = useState("")
     const [user, setUser] = useState("")
     const [password, setPassword] = useState("")
     const [canSubmit, setCanSubmit] = useState(false)
 
     const validateEmail = (email) => {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const re = /^\w+([.-]?\w+)+@\w+([.:]?\w+)+(\.[a-zA-Z0-9]{2,3})+$/
         return re.test(String(email).toLowerCase());
     }
 
     const validateForm = () => {
         if (user.length > 0 && password.length > 0 && email.length > 0) {
-            // return validateEmail(email)
-            return true
+            return validateEmail(email)
         }
         return false
     }
@@ -130,7 +129,7 @@ const RegisterForm = (props) => {
             </Grid>
             <Grid item>
                 <Input
-                    type="text"
+                    type="password"
                     className={classes.input}
                     defaultValue=""
                     placeholder="Password"
