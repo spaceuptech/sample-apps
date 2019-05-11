@@ -1,66 +1,94 @@
-import {
-    config
-} from "./config";
-
-import {
-    Observable
-} from 'rxjs/Observable';
+/**
+ * UserService.js handles all authentication related operations like:
+ * - sign in
+ * - sign up
+ * - logout
+ * 
+ * @author 8byr0 <https://github.com/8byr0>
+ */
+import { config } from "./config";
 import { cond } from "space-api";
 
-export const rejectionCause = {
-    INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
-    INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'
+/**
+ * Update user object in space-cloud.
+ * This function is used to update active status.
+ * @param {Object} user the user to update
+ */
+function updateUser(user) {
+    return new Promise((resolve, reject) => {
+        config.db.updateOne('users')
+            .where(cond('_id', '==', user._id))
+            .set(user)
+            .apply()
+            .then((res) => {
+                resolve(res)
+            })
+            .catch((err) => {
+                reject(err)
+            });
+    });
 }
 
 /**
- * Update user object in space-cloud
- * @param {Object} user new user
+ * Attempt to login a user to space cloud API.
+ * This function updates config token in order for other calls to be successfull.
+ * @param {string} username username of the user
+ * @param {string} password password of the user
+ * @returns {Promise}
  */
-async function updateUser(user) {
-    await config.db.updateOne('users').where(cond('_id', '==', user._id))
-        .set(user).apply().then(res => ({ res })).catch(err => { throw err });
-}
-
 function login(username, password) {
-
-    return Observable.create((observer) => {
+    return new Promise((resolve, reject) => {
         config.db.signIn(username, password).then(res => {
             if (res.status === 200) {
+
                 config.api.setToken(res.data.token)
 
-                observer.next({
+                resolve({
                     user: res.data.user,
                     token: res.data.token
                 })
 
 
             } else {
-                observer.error("Unable to sign in: " + res.data.error)
+                reject("Unable to sign in: " + res.data.error)
             }
         })
     })
 
 }
 
+/**
+ * Sign up a new user to space cloud API
+ * @param {string} email email of the user
+ * @param {string} username username of the user
+ * @param {string} password password of the user
+ * @returns {Promise}
+ */
 function signup(email, username, password) {
-
-    return Observable.create((observer) => {
+    return new Promise((resolve, reject) => {
         config.db.signUp(email, username, password, 'default').then(res => {
             if (res.status === 200) {
-                observer.next({
+                resolve({
                     user: res.data.user,
                     token: res.data.token
                 })
             } else {
-                observer.error("Unable to sign up: " + res.data.error)
+                reject("Unable to sign up: " + res.data.error)
             }
         })
     })
 
 }
 
-const logout = async () => {
-    config.api.setToken(null)
+/**
+ * Logout active user. 
+ * This function resets Space-Cloud's api token to null so that new call 
+ * will no longer success.
+ */
+const logout = () => {
+    return new Promise((resolve, reject) => {
+        config.api.setToken(null)
+    });
 }
 
 export const userService = {
