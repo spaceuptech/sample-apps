@@ -58,7 +58,7 @@ const sendMessage = (chatID, text) => {
                 _id: config.generateId(),
                 text: text,
                 read: false,
-                discussion_id: chatID,
+                chat_id: chatID,
                 from: user._id,
                 time: new Date()
             })
@@ -108,7 +108,7 @@ const getMessages = () => {
                 let messages = {}
 
                 res.data.result.forEach((elt) => {
-                    const key = elt.discussion_id
+                    const key = elt.chat_id
                     if (!messages[key]) {
                         messages[key] = []
                     }
@@ -191,7 +191,7 @@ const getChats = () => {
  * @returns {Observable} An observable triggering each time a message matches provided chat ID
  */
 const startMessagesRealtime = (chatID) => {
-    const condition = cond("discussion_id", "==", chatID)
+    const condition = cond("chat_id", "==", chatID)
 
     return config.db.liveQuery("messages").where(condition)
 }
