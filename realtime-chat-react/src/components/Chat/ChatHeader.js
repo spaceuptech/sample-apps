@@ -4,6 +4,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
 import classnames from 'classnames'
+import { connect } from 'react-redux';
+
 
 const styles = theme => ({
     root: {
@@ -42,6 +44,7 @@ const styles = theme => ({
 
 const ChatHeader = (props) => {
     const { classes, className, user } = props;
+
     return (
         <Grid container justify="flex-start" alignItems="center" direction="row" className={className}>
             <Grid item>
@@ -49,12 +52,17 @@ const ChatHeader = (props) => {
             </Grid>
             <Grid item>
                 <Grid container justify="flex-start" alignItems="flex-start" direction="column">
-                    <Typography className={classes.chatPartnerName}>{user.name} <span className={classnames(classes.activeDot, {[classes.hidden]: !user.isActive})}></span></Typography>
-                    <Typography className={classnames({[classes.hidden]: !user.isActive})}>Active now</Typography>
+                    <Typography className={classes.chatPartnerName}>{user.name}&nbsp;
+                        <span className={classnames(classes.activeDot, { [classes.hidden]: !!!user.isActive })}></span></Typography>
+                    <Typography className={classnames({ [classes.hidden]: !!!user.isActive })}>Active now</Typography>
+                    <Typography className={classnames({ [classes.hidden]: user.isActive })}>{new Date(user.lastActiveTime).toLocaleDateString()}</Typography>
                 </Grid>
             </Grid>
         </Grid>
     )
 }
 
-export default withStyles(styles)(ChatHeader);
+const mapStateToProps = (state) => ({
+    inactiveTimeout: state.user.inactiveTimeout
+});
+export default connect(mapStateToProps)(withStyles(styles)(ChatHeader));

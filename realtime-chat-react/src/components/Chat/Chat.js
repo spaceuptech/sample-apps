@@ -58,7 +58,7 @@ const Chat = (props) => {
         <div className={classes.root}>
             <ChatHeader user={partner} />
             <Grid className={classes.chat}>
-                <ChatDiscussion messages={props.messages[discussionID]} partner={partner} className={classes.discussion} />
+                <ChatDiscussion messages={props.messages[discussionID]} partner={partner} className={classes.discussion}/>
                 <ChatSend item className={classes.sendBox}
                     onSubmit={text => sendMessage(discussionID, text)} />
             </Grid>
