@@ -1,68 +1,75 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Getting started
 
-## Available Scripts
+## Clone repo
+```shell
+git clone https://github.com/spaceuptech/sample-apps.git
+```
 
-In the project directory, you can run:
+## Start space-cloud
+`config.yaml` is configured to reach a MongoDB instance on `localhost:27017`. 
+If you want to use another instance, open `config.yaml` and edit the following line:
+```yaml
+# ...
+conn: mongodb://localhost:27017
+# ...
+```
+```shell
+cd realtime-chat-react
+/path/to/space-cloud.exe run --config ./space-cloud/config.yaml
+```
 
-### `npm start`
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Start space-chat client
+```shell
+npm install
+npm run start
+```
+Open [http://localhost:3000](http://localhost:3000) to see the chat client
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+# Walkaround
+In order to develop this app, the following libs/frameworks have been used:
+- [react](https://www.npmjs.com/package/react)
+- [redux](https://www.npmjs.com/package/redux)
+- [@material-ui](https://www.npmjs.com/package/@material-ui)
 
-### `npm test`
+## Directories
+### 📂 actions
+Split between `chat`, `notifications` and `user`, this directory modules are in charge of handling all actions out of UI components. Each action may call a service to proceed to async data retrieval.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+### 📂 assets
+Icons / images used by the app.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 📂 components
+UI components organized in high level modules (`Chat`, `ChatList`, `UserDirectoryDialog`...).
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+### 📂 constants
+The constants defined in this directory's modules are used to dispatch typed actions to reducers. They are splitted between `chat` and `user`, and contain all the actions that may be triggered by action handlers.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 📂 helpers
+Helpers directory contains redux store initializer and an history helper. This place may be useful to add an auth-header helper for example.
 
-### `npm run eject`
+### 📂 pages
+Higher level wrapping components (`Chat page` and `Login or register page`).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 📂 reducers
+The reducers used to update store, splitted between `chat` and `user`.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 📂 services
+This is probably the place you will want to have a look first has it handles all `Space Cloud` logic !
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### Chat service
+- Fetch messages / users / chats 
+- Realtime listen to new messages / users / chats
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+#### User service
+- Sign in
+- Sign up
+- Logout
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Author
+This sample chat app has been developed by [8byr0](https://github.com/8byr0).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+# Licence
+APACHE 2.0 [view details](https://github.com/spaceuptech/sample-apps/blob/master/LICENSE)
