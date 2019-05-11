@@ -26,7 +26,12 @@ const ChatDiscussion = (props) => {
 
     useEffect(() => {
         messagesEnd.current.scrollIntoView({ behavior: 'smooth' })
-    }, [props])
+        props.messages.filter(message => {
+            return (message.read === false) && (message.from !== props.activeUser._id)
+        }).forEach(message => {
+            props.setMessageRead(message)
+        });
+    }, [props.messages])
 
     return (
         <Grid container justify="flex-start" alignItems="center" direction="column" className={classnames(classes.root, className)}>
@@ -47,7 +52,8 @@ const mapStateToProps = (state) => ({
     activeUser: state.user.user
 });
 const mapDispatchToProps = (dispatch) => ({
-    sendMessage: (id, text) => dispatch(ChatActions.sendMessage(id, text))
+    sendMessage: (id, text) => dispatch(ChatActions.sendMessage(id, text)),
+    setMessageRead: (message) => dispatch(ChatActions.setMessageRead(message)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatDiscussion));

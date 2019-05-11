@@ -54,6 +54,16 @@ const sendMessage = (discussionID, text) => {
     });
 }
 
+/**
+ * Update user object in space-cloud
+ * @param {Object} user new user
+ */
+function updateMessage(message) {
+    return new Promise((resolve, reject) => {
+        config.db.updateOne('messages').where(cond('_id', '==', message._id))
+            .set(message).apply().then(res => (resolve(res))).catch(err => { throw err });
+    });
+}
 /////////////////
 //   READ ALL  //
 /////////////////
@@ -167,5 +177,6 @@ export const ChatService = {
     startMessagesRealtime,
     startChatsRealtime,
     startUsersRealtime,
-    createChat
+    createChat,
+    updateMessage
 }

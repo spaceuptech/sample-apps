@@ -83,11 +83,6 @@ export const chat = (state = initialState, action) => {
                 messages: {
                     ...state.messages,
                     ...action.messages
-                    // ...()=>{
-
-                    //     action.messages.filter((set, idx) => !!!Object.keys(state.messages).includes(idx))
-
-                    // }
                 }
             }
         case ChatConstants.SET_DISCUSSION_MESSAGES:

@@ -39,6 +39,21 @@ const stopAllLiveQueries = () => {
     }
 }
 
+const setMessageRead = (message) => {
+    return dispatch => {
+        ChatService.updateMessage({ ...message, read: true }).then(
+            (res) => {
+
+            }
+        ).catch(
+            (err) => {
+                dispatch(notificationActions.failureMessage("Error while updating message metadata. Details: " + err))
+            });
+
+    }
+}
+
+
 /**
  * Dispatch an action to reset
  * chat reducer to its initial state
@@ -63,11 +78,10 @@ const listenToThread = (discussionID) => {
              * @param {Array<Object>} docs 
              * @param {*} type 
              */
-            (docs, type) => {
+            (newMessages, type) => {
                 // TODO 8byr0 compare incoming list with existing to append only new messages
-                const messages = docs
-                if (docs.length > 0) {
-                    dispatch({ type: ChatConstants.SET_DISCUSSION_MESSAGES, discussionID: discussionID, messages: messages })
+                if (newMessages.length > 0) {
+                    dispatch({ type: ChatConstants.SET_DISCUSSION_MESSAGES, discussionID: discussionID, messages: newMessages })
                 }
 
             },
@@ -107,12 +121,12 @@ const listenToUsers = () => {
                 })
                 users["ALL"] = { _id: "ALL", name: 'ALL' }
 
-                const newUsersKeys = _.reduce(users, function(result, value, key) {
+                const newUsersKeys = _.reduce(users, function (result, value, key) {
                     return _.isEqual(value, store.getState().chat.users[key]) ?
                         result : result.concat(key);
                 }, []);
 
-                newUsersKeys.forEach(key => dispatch({type: ChatConstants.ADD_USER, user: users[key]}))
+                newUsersKeys.forEach(key => dispatch({ type: ChatConstants.ADD_USER, user: users[key] }))
             },
 
 
@@ -147,7 +161,7 @@ const listenToDiscussions = () => {
                 const newChats = _.differenceWith(chats, store.getState().chat.chats, _.isEqual);
 
                 newChats.forEach((chat) => {
-                    dispatch({type: ChatConstants.ADD_CHAT, chat})
+                    dispatch({ type: ChatConstants.ADD_CHAT, chat })
                     dispatch({
                         type: ChatConstants.CREATE_MESSAGES_LIST_IF_NOT_EXIST,
                         chatID: chat._id
@@ -188,14 +202,14 @@ const retrieveChats = (launchRealTime = false) => {
 }
 const retrieveMessages = () => {
     return dispatch => {
-        ChatService.getMessages().then(
-            (messages) => {
-                dispatch({ type: ChatConstants.SET_MESSAGES, messages })
-            }).catch(
-                (error) => {
-                    dispatch(notificationActions.failureMessage("An error occurred when retrieving messages: " + error))
-                }
-            )
+        // ChatService.getMessages().then(
+        //     (messages) => {
+        //         dispatch({ type: ChatConstants.SET_MESSAGES, messages })
+        //     }).catch(
+        //         (error) => {
+        //             dispatch(notificationActions.failureMessage("An error occurred when retrieving messages: " + error))
+        //         }
+        //     )
     }
 }
 
@@ -280,10 +294,11 @@ const startChatWith = (partnerID) => {
 }
 
 export const ChatActions = {
+    setMessageRead,
     loadInitialData,
     openDiscussion,
     sendMessage,
     stopAllLiveQueries,
     clearData,
-    startChatWith
+    startChatWith,
 }

@@ -10,7 +10,7 @@ const loggerMiddleware = createLogger({
 });
 
 // if you want to debug redux and see which actions are triggered, set to true 
-const enableLogger = false;
+const enableLogger = true;
 
 let middlewares = enableLogger ?
     applyMiddleware(
