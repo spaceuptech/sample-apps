@@ -1,3 +1,9 @@
+/**
+ * user.constants.js contain all actions that can be dispatched to UserReducer.
+ * 
+ * @author 8byr0 <https://github.com/8byr0>
+ */
+
 export const userConstants = {
     REGISTER_REQUEST: 'REGISTER_REQUEST',
     REGISTER_SUCCESS: 'REGISTER_SUCCESS',

@@ -18,6 +18,7 @@ import * as _ from 'lodash'
  */
 const loadInitialData = () => {
     return dispatch => {
+        // Start listeners
         dispatch(listenToChats())
         dispatch(listenToUsers())
     }
@@ -49,12 +50,6 @@ const stopAllLiveQueries = () => {
         const usersListener = store.getState().chat.usersListener
         if (null !== usersListener) {
             usersListener()
-        }
-
-        // Stop listening for new discussions
-        const discussionsListener = store.getState().chat.discussionsListener
-        if (null !== discussionsListener) {
-            discussionsListener()
         }
     }
 }
@@ -105,7 +100,7 @@ const listenToThread = (chatID) => {
             (newMessages, type) => {
                 // TODO 8byr0 compare incoming list with existing to append only new messages
                 if (newMessages.length > 0) {
-                    dispatch({ type: ChatConstants.SET_DISCUSSION_MESSAGES, chatID: chatID, messages: newMessages })
+                    dispatch({ type: ChatConstants.SET_CHAT_MESSAGES, chatID: chatID, messages: newMessages })
                 }
 
             },
@@ -181,7 +176,7 @@ const listenToUsers = () => {
  */
 const listenToChats = () => {
     return dispatch => {
-        const newDiscussionsListener = ChatService.startChatsRealtime().subscribe(
+        const newChatsListener = ChatService.startChatsRealtime().subscribe(
             /**
              * Callback triggered on new chats created
              * @param {Array<Object>} docs 
@@ -210,8 +205,8 @@ const listenToChats = () => {
             })
 
         dispatch({
-            type: ChatConstants.SET_INCOMING_DISCUSSIONS_LISTENER,
-            listener: newDiscussionsListener
+            type: ChatConstants.SET_INCOMING_CHATS_LISTENER,
+            listener: newChatsListener
         })
     }
 }
@@ -223,10 +218,10 @@ const listenToChats = () => {
  */
 const openChat = (discussionID) => {
     return dispatch => {
-        dispatch({ type: ChatConstants.OPEN_DISCUSSION_REQUEST });
+        dispatch({ type: ChatConstants.OPEN_CHAT_REQUEST });
 
         dispatch({
-            type: ChatConstants.OPEN_DISCUSSION_SUCCESS,
+            type: ChatConstants.OPEN_CHAT_SUCCESS,
             id: discussionID
         });
     };

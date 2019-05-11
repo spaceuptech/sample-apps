@@ -131,7 +131,7 @@ const mapStateToProps = (state) => ({
     opened: state.chat.opened,
 });
 const mapDispatchToProps = (dispatch) => ({
-    updateUserActivity: (active, lastActiveTime) => dispatch(UserActions.setUserActive(active, lastActiveTime))
+    updateUserActivity: (isActive, lastActiveTime) => dispatch(UserActions.setUserActive(isActive, lastActiveTime))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatPage));

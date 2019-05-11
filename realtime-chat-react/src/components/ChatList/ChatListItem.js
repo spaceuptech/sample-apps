@@ -91,7 +91,7 @@ const mapStateToProps = (state) => ({
     messages: state.chat.messages
 });
 const mapDispatchToProps = (dispatch) => ({
-    openDiscussion: (partnerID) => dispatch(ChatActions.openDiscussion(partnerID))
+    openDiscussion: (partnerID) => dispatch(ChatActions.openChat(partnerID))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatListItem));
