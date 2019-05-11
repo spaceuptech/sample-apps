@@ -1,5 +1,6 @@
 export { default as ChatList } from './ChatList/ChatList'
 export { default as Chat } from './Chat/Chat'
+export { default as ChatDrawer } from './ChatDrawer/ChatDrawer'
 export { default as ChatSearch } from './ChatSearch/ChatSearch'
 export { default as NavBar } from './NavBar/NavBar'
 export { default as PrivateRoute } from './PrivateRoute/PrivateRoute'

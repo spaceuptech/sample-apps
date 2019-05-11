@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import { ChatList, NavBar, Chat, ChatSearch } from '../../components'
+import {  NavBar, Chat, ChatDrawer } from '../../components'
 import { ReactComponent as SectionBackground } from '../../assets/no_chat_loaded_background.svg';
 import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { UserActions } from '../../actions/user.actions';
 import IdleTimer from 'react-idle-timer'
-import Fab from '@material-ui/core/Fab';
-import ChatIcon from '@material-ui/icons/Chat';
 import UserDirectoryDialog from '../../components/UserDirectoryDialog/UserDirectoryDialog';
+import Hidden from '@material-ui/core/Hidden';
 
 
 const drawerWidth = 300;
@@ -40,7 +39,8 @@ const styles = theme => {
         snippetText: {
             paddingBottom: theme.spacing.unit * 5,
             paddingTop: theme.spacing.unit * 5,
-            fontSize: '24px'
+            fontSize: '24px',
+            textAlign: 'center'
         },
         spanText: {
             color: '#BDBDBD'
@@ -64,8 +64,9 @@ const styles = theme => {
 
 const ChatPage = (props) => {
     const { classes, opened } = props;
-
+    const [isMobileOpen, setMobileOpen] = useState(false)
     const [isUserDirectoryOpen, openUserDirectory] = useState(false);
+
     const setActive = () => {
         props.updateUserActivity(true, Date.now())
     }
@@ -74,6 +75,10 @@ const ChatPage = (props) => {
         props.updateUserActivity(false, Date.now())
     }
 
+    const handleDrawerToggle = () => {
+        setMobileOpen(!!!isMobileOpen);
+    };
+    
     return (
         <div className={classes.root}>
             <IdleTimer
@@ -83,21 +88,35 @@ const ChatPage = (props) => {
                 onAction={setActive}
                 debounce={250}
                 timeout={5000} />
-            <NavBar />
+            <NavBar onToggle={handleDrawerToggle}/>
             <UserDirectoryDialog open={isUserDirectoryOpen} onClose={() => openUserDirectory(false)} />
-            < Drawer classes={{
-                paper: classes.drawerPaper,
-            }
-            }
-                className={classes.drawer}
-                variant="permanent" >
-                <div className={classes.toolbar} />
-                <ChatSearch />
-                <ChatList className={classes.chatList} />
-                <Fab color="primary" aria-label="Add" className={classes.newMessageFab} onClick={() => openUserDirectory(true)}>
-                    <ChatIcon />
-                </Fab>
-            </Drawer >
+            <Hidden smUp implementation="css">
+                <Drawer
+                    variant="temporary"
+                    anchor='left'
+                    open={isMobileOpen}
+                    onClose={handleDrawerToggle}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <ChatDrawer onFabClick={() => openUserDirectory(true)} onChatOpen={handleDrawerToggle}/>
+                </Drawer>
+            </Hidden>
+            <Hidden xsDown implementation="css">
+                <Drawer
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                    variant="permanent"
+                    className={classes.drawer}
+
+                >
+                    <div className={classes.toolbar} />
+                    <ChatDrawer onFabClick={() => openUserDirectory(true)} onChatOpen={()=>{}}/>
+                </Drawer>
+            </Hidden>
+            
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 {
@@ -108,11 +127,11 @@ const ChatPage = (props) => {
                             justify="space-around"
                             alignItems="center"
                         >
-                            <Grid item>
+                            <Grid item style={{ padding: '10px' }}>
                                 <Typography className={classes.snippetText}><span className={classes.spanText}>Select a Chat and</span> say Hi! to your friends!</Typography>
                             </Grid>
-                            <Grid item>
-                                <SectionBackground />
+                            <Grid item style={{ padding: '10px' }}>
+                                <SectionBackground style={{ maxWidth: '100%' }} />
                             </Grid>
                         </Grid>
                         :

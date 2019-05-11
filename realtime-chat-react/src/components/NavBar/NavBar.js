@@ -9,6 +9,8 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { ReactComponent as WhiteLogo } from '../../assets/white_logo.svg';
 import { connect } from 'react-redux'
 import { UserActions } from '../../actions/user.actions';
+import MenuIcon from '@material-ui/icons/Menu';
+import IconButton from '@material-ui/core/IconButton';
 
 const styles = theme => ({
     root: {
@@ -22,6 +24,9 @@ const styles = theme => ({
     menuButton: {
         marginLeft: -12,
         marginRight: 20,
+        [theme.breakpoints.up('sm')]: {
+          display: 'none',
+        },
     },
 });
 
@@ -31,6 +36,14 @@ const NavBar = (props) => {
         <div className={classes.root}>
             <AppBar position="fixed">
                 <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="Open drawer"
+                        onClick={props.onToggle}
+                        className={classes.menuButton}
+                    >
+                        <MenuIcon />
+                    </IconButton>
                     <Grid
                         container
                         direction="row"
@@ -55,8 +68,8 @@ const NavBar = (props) => {
     );
 }
 
-const mapDispatchToProps = dispatch =>({
-    logout: ()=>dispatch(UserActions.logout())
+const mapDispatchToProps = dispatch => ({
+    logout: () => dispatch(UserActions.logout())
 })
 
 export default connect(null, mapDispatchToProps)(withStyles(styles)(NavBar));

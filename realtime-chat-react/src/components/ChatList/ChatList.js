@@ -27,6 +27,7 @@ const ChatList = (props) => {
                 (chats.length > 0) ?
                     chats.map((entry, idx) => (
                         <ChatListItem
+                            onUserSelect={props.onUserSelect}
                             key={idx}
                             active={props.opened === entry._id}
                             discussion={entry._id}

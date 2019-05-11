@@ -65,7 +65,10 @@ const ChatListItem = (props) => {
     return (
         <ListItem alignItems="flex-start"
             className={classnames(classes.container, { [classes.active]: (props.openedChat === partner._id) })}
-            onClick={() => openDiscussion(props.discussion)}>
+            onClick={() => {
+                openDiscussion(props.discussion);
+                props.onUserSelect()
+             }}>
             <ListItemAvatar>
                 {<Avatar className={classes.avatar}>{partner.name ? partner.name.charAt(0).toUpperCase() : ""}</Avatar>}
             </ListItemAvatar>
