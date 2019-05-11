@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import { ChatList, NavBar, Chat, ChatSearch } from '../../components'
@@ -7,6 +7,9 @@ import { Typography, Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { UserActions } from '../../actions/user.actions';
 import IdleTimer from 'react-idle-timer'
+import Fab from '@material-ui/core/Fab';
+import ChatIcon from '@material-ui/icons/Chat';
+import UserDirectoryDialog from '../../components/UserDirectoryDialog/UserDirectoryDialog';
 
 
 const drawerWidth = 300;
@@ -50,6 +53,11 @@ const styles = theme => {
             [theme.breakpoints.up('sm')]: {
                 height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
             },
+        },
+        newMessageFab: {
+            position: 'absolute',
+            right: "10px",
+            bottom: "10px",
         }
     }
 };
@@ -57,6 +65,7 @@ const styles = theme => {
 const ChatPage = (props) => {
     const { classes, opened } = props;
 
+    const [isUserDirectoryOpen, openUserDirectory] = useState(false);
     const setActive = () => {
         props.updateUserActivity(true, Date.now())
     }
@@ -75,6 +84,7 @@ const ChatPage = (props) => {
                 debounce={250}
                 timeout={5000} />
             <NavBar />
+            <UserDirectoryDialog open={isUserDirectoryOpen} onClose={() => openUserDirectory(false)} />
             < Drawer classes={{
                 paper: classes.drawerPaper,
             }
@@ -84,6 +94,9 @@ const ChatPage = (props) => {
                 <div className={classes.toolbar} />
                 <ChatSearch />
                 <ChatList className={classes.chatList} />
+                <Fab color="primary" aria-label="Add" className={classes.newMessageFab} onClick={() => openUserDirectory(true)}>
+                    <ChatIcon />
+                </Fab>
             </Drawer >
             <main className={classes.content}>
                 <div className={classes.toolbar} />
@@ -103,7 +116,7 @@ const ChatPage = (props) => {
                             </Grid>
                         </Grid>
                         :
-                        <Chat partner={props.users[opened]} />
+                        <Chat discussionID={opened} />
                 }
 
             </main>
@@ -116,7 +129,6 @@ const mapStateToProps = (state) => ({
     users: state.chat.users,
     chatsList: state.chat.list,
     opened: state.chat.opened,
-    // openedChat: _.first(_.reject(state.chat.list, (chat) => chat.user._id !== (state.chat.opened)))
 });
 const mapDispatchToProps = (dispatch) => ({
     updateUserActivity: (active, lastActiveTime) => dispatch(UserActions.setUserActive(active, lastActiveTime))

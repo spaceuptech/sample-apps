@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames'
 import ListItem from '@material-ui/core/ListItem';
@@ -8,7 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Typography } from '@material-ui/core';
 import { ChatActions } from '../../actions/chat.actions';
 import { connect } from 'react-redux'
-import * as _ from 'lodash'
+
 
 const styles = theme => ({
     margin: {
@@ -51,36 +51,23 @@ const styles = theme => ({
 });
 
 
-const ChatListItem = (props) => {
-    const { classes, openDiscussion} = props;
-    const [excerpt, setExcerpt] = useState("")
-    const [partner, setPartner] = useState({})
-    useEffect(() => {
-        if (props.partner) {
-            setExcerpt(_.last(props.messages[props.discussion]))
-            setPartner(props.partner)
-        }
-    }, [props])
+const UsersListItem = (props) => {
+    const { classes, user } = props;
+
 
     return (
         <ListItem alignItems="flex-start"
-            className={classnames(classes.container, { [classes.active]: (props.openedChat === partner._id) })}
-            onClick={() => openDiscussion(props.discussion)}>
+            className={classnames(classes.container)}
+            onClick={() =>{props.onClick(user._id); }}
+        >
             <ListItemAvatar>
-                {<Avatar className={classes.avatar}>{partner.name ? partner.name.charAt(0).toUpperCase() : ""}</Avatar>}
+                {<Avatar className={classes.avatar}>{user.name ? user.name.charAt(0) : ""}</Avatar>}
             </ListItemAvatar>
-            <ListItemText
-                primary={
-                    <Typography className={classes.palName}>
-                        {partner.name} <span className={classnames(classes.activeDot, { [classes.hidden]: !partner.isActive })}></span>
-                    </Typography>
-                }
-                secondary={
-                    <React.Fragment>
-                        {excerpt ? excerpt.text : "Empty chat"}
-                    </React.Fragment>
-                }
-            />
+            <ListItemText>
+                <Typography className={classes.palName}>
+                    {user.name} <span className={classnames(classes.activeDot, { [classes.hidden]: !user.isActive })}></span>
+                </Typography>
+            </ListItemText>
         </ListItem >
     )
 }
@@ -94,4 +81,4 @@ const mapDispatchToProps = (dispatch) => ({
     openDiscussion: (partnerID) => dispatch(ChatActions.openDiscussion(partnerID))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatListItem));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(UsersListItem));

@@ -45,7 +45,7 @@ const ChatHeader = (props) => {
     return (
         <Grid container justify="flex-start" alignItems="center" direction="row" className={className}>
             <Grid item>
-                <Avatar className={classes.avatar}>{user.name.charAt(0)}</Avatar>
+                <Avatar className={classes.avatar}>{user.name.charAt(0).toUpperCase()}</Avatar>
             </Grid>
             <Grid item>
                 <Grid container justify="flex-start" alignItems="flex-start" direction="column">

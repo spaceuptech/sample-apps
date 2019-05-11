@@ -10,7 +10,7 @@ import {
 let existingUser = JSON.parse(localStorage.getItem('user'));
 let userToken = JSON.parse(localStorage.getItem('token'));
 
-// TODO move this elsewhere
+// TODO 8byr0 move this elsewhere
 if (userToken) {
     config.api.setToken(userToken)
 }

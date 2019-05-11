@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
 import ChatMessage from './ChatMessage';
 import classnames from 'classnames'
 
@@ -22,7 +21,7 @@ const styles = theme => ({
 });
 
 const ChatDiscussion = (props) => {
-    const { classes, className, messages, partner } = props;
+    const { classes, className, messages } = props;
     const messagesEnd = React.createRef()
 
     useEffect(() => {
@@ -31,7 +30,7 @@ const ChatDiscussion = (props) => {
 
     return (
         <Grid container justify="flex-start" alignItems="center" direction="column" className={classnames(classes.root, className)}>
-            <Typography className={classes.chatStartNotice}>This is the very beginning of your chat with {partner.name}.</Typography>
+            {/* <Typography className={classes.chatStartNotice}>This is the very beginning of your chat with {partner.name}.</Typography> */}
             {
                 messages.map((message, idx) => (
                     <ChatMessage message={message} incoming={(message.from !== props.activeUser._id)} key={idx} />

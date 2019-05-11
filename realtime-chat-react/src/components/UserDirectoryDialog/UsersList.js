@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import ChatListItem from './ChatListItem';
+import UsersListItem from './UsersListItem';
 import classnames from 'classnames'
 import { ChatActions } from '../../actions/chat.actions';
 import { connect } from 'react-redux'
@@ -17,20 +17,20 @@ const styles = theme => ({
     },
 });
 
-const ChatList = (props) => {
-    const { classes, chats } = props;
-    useEffect(() => { props.loadInitial(); }, []);
-
+const UsersList = (props) => {
+    const { classes, users, startChatWith } = props;
+    
     return (
         <List className={classnames(classes.root, props.className)}>
             {
-                (chats.length > 0) ?
-                    chats.map((entry, idx) => (
-                        <ChatListItem
+                (Object.keys(users).length > 0) ?
+                    Object.values(users).map((singleUser, idx) => (
+                        <UsersListItem
                             key={idx}
-                            active={props.opened === entry._id}
-                            discussion={entry._id}
-                            partner={props.users[(entry.from === props.loggedUserID || entry.to === "ALL") ? entry.to : entry.from]} />
+                            active={singleUser.isActive}
+                            user={singleUser}
+                            onClick={()=>{props.onUserSelect(); startChatWith(singleUser._id)}}
+                        />
                     )) :
                     <Typography>No chat started yet</Typography>
             }
@@ -39,13 +39,14 @@ const ChatList = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    loggedUserID: state.user.user ? state.user.user._id : null, 
-    users: state.chat.users, 
-    chats: state.chat.chats,  
+    loggedUserID: state.user.user ? state.user.user._id : null,
+    users: state.chat.users,
+    chats: state.chat.chats,
     opened: state.chat.opened
 });
 const mapDispatchToProps = (dispatch) => ({
     loadInitial: () => dispatch(ChatActions.loadInitialData()),
+    startChatWith: (partnerID) => dispatch(ChatActions.startChatWith(partnerID))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ChatList));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(UsersList));

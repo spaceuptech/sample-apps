@@ -46,27 +46,35 @@ const styles = theme => ({
 });
 
 const Chat = (props) => {
-    const { classes, sendMessage, partner } = props;
+    const { classes, sendMessage, discussionID } = props;
+
+    const discussion = Object.values(props.chats).filter(chat => chat._id === discussionID)[0]
+    const to = discussion.to
+    const from = discussion.from
+    const palID = (to === props.localUser._id) ? from : to
+    const partner = props.users[palID]
 
     return (
         <div className={classes.root}>
             <ChatHeader user={partner} />
             <Grid className={classes.chat}>
-                <ChatDiscussion messages={props.messages[partner._id]} partner={partner} className={classes.discussion} />
+                <ChatDiscussion messages={props.messages[discussionID]} partner={partner} className={classes.discussion} />
                 <ChatSend item className={classes.sendBox}
-                    onSubmit={text => sendMessage(partner._id, text)} />
+                    onSubmit={text => sendMessage(discussionID, text)} />
             </Grid>
         </div>
     )
 }
 
 const mapStateToProps = (state) => ({
+    chats: state.chat.chats,
+    users: state.chat.users,
     messages: state.chat.messages,
-    chatsList: state.chat.list,
-    opened: state.chat.opened
+    opened: state.chat.opened,
+    localUser: state.user.user
 });
 const mapDispatchToProps = (dispatch) => ({
-    sendMessage: (id, text) => dispatch(ChatActions.sendMessage(id, text))
+    sendMessage: (discussionID, text) => dispatch(ChatActions.sendMessage(discussionID, text))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Chat));

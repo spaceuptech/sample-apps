@@ -1,12 +1,11 @@
-import {
-    ChatConstants
-} from "../constants/chat.constants";
+import { ChatConstants } from "../constants/chat.constants";
+
 
 const initialState = {
     isLoadingChatList: false,
     isLoadingDiscussion: false,
     list: [],
-    chats: {},
+    chats: [],
     users: {},
     messages: {},
     opened: ChatConstants.NO_CHAT_OPENED,
@@ -41,6 +40,38 @@ export const chat = (state = initialState, action) => {
                 ...state,
                 chats: action.chats
             }
+        case ChatConstants.ADD_CHAT:
+            return {
+                ...state,
+                chats: [
+                    ...state.chats,
+                    action.chat
+                ]
+            }
+        case ChatConstants.ADD_USER:
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [action.user._id]: action.user
+                }
+            }
+        case ChatConstants.START_CHAT_SUCCESS:
+            return {
+                ...state,
+                chats: [
+                    ...state.chats,
+                    action.chat
+                ]
+            }
+        case ChatConstants.CREATE_MESSAGES_LIST_IF_NOT_EXIST:
+            return {
+                ...state,
+                messages: {
+                    ...state.messages,
+                    [action.chatID]: state.messages[action.chatID] || []
+                }
+            }
         case ChatConstants.SET_USERS:
             return {
                 ...state,
@@ -49,25 +80,33 @@ export const chat = (state = initialState, action) => {
         case ChatConstants.SET_MESSAGES:
             return {
                 ...state,
-                messages: action.messages,
+                messages: {
+                    ...state.messages,
+                    ...action.messages
+                    // ...()=>{
+
+                    //     action.messages.filter((set, idx) => !!!Object.keys(state.messages).includes(idx))
+
+                    // }
+                }
             }
-        case ChatConstants.SET_PARTNER_MESSAGES:
+        case ChatConstants.SET_DISCUSSION_MESSAGES:
             return {
                 ...state,
                 messages: {
                     ...state.messages,
-                    [action.partnerID]: action.messages
-                } 
-                // state.messages.map(
-                //     (content, idx) => (idx === action.partnerID) ? action.messages: content
-                // )
-                
-                // _.findIndex(state.messages, action.partnerID)
-                // state.messages
-                // [
-                //     ...state.messages,
-                //     state.messages[action.partnerID]: action.messages
-                // ],
+                    [action.discussionID]: action.messages
+                }
+            }
+        case ChatConstants.SET_INCOMING_DISCUSSIONS_LISTENER:
+            return {
+                ...state,
+                discussionsListener: action.listener
+            }
+        case ChatConstants.REMOVE_INCOMING_DISCUSSIONS_LISTENER:
+            return {
+                ...state,
+                discussionsListener: null
             }
         case ChatConstants.SET_INCOMING_USERS_LISTENER:
             return {
@@ -116,9 +155,7 @@ export const chat = (state = initialState, action) => {
             return {
                 ...state,
                 isLoadingDiscussion: false,
-                // opened: state.list.findIndex((elt) => elt.user._id === action.id)
                 opened: action.id
-                // opened: _.first(_.reject(state.list, chat => chat.user._id !== action.id))
             }
         case ChatConstants.SAVE_LIVE_QUERY:
             return {
