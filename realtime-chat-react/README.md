@@ -1,3 +1,5 @@
+![Browser snapshot](snapshots/space-chat-browser.png?raw=true "Space chat application")
+
 # Getting started
 
 ## Clone repo
