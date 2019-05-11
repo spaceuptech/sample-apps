@@ -5,15 +5,15 @@
  * @author 8byr0 <https://github.com/8byr0>
  */
 
- import { ChatConstants } from "../constants/chat.constants";
+import { ChatConstants } from "../constants/chat.constants";
 
 
 const initialState = {
     isLoadingChatList: false,
     isLoadingDiscussion: false,
-    chats: [],
+    chats: [{ _id: 'ALL', to: 'ALL' }],
     users: {},
-    messages: {},
+    messages: {ALL: []},
     opened: ChatConstants.NO_CHAT_OPENED,
     liveQueries: [],
     chatsListener: null,

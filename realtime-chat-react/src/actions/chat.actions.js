@@ -21,6 +21,7 @@ const loadInitialData = () => {
         // Start listeners
         dispatch(listenToChats())
         dispatch(listenToUsers())
+        dispatch(listenToThread("ALL"))
     }
 }
 
@@ -184,7 +185,7 @@ const listenToChats = () => {
              */
             (chats, type) => {
                 const newChats = _.differenceWith(chats, store.getState().chat.chats, _.isEqual);
-
+                
                 newChats.forEach((chat) => {
                     dispatch({ type: ChatConstants.ADD_CHAT, chat })
                     dispatch({
