@@ -9,6 +9,7 @@ import { Typography } from '@material-ui/core';
 import { ChatActions } from '../../actions/chat.actions';
 import { connect } from 'react-redux'
 import * as _ from 'lodash'
+import { ChatConstants } from '../../constants/chat.constants';
 
 const styles = theme => ({
     margin: {
@@ -52,9 +53,20 @@ const styles = theme => ({
 
 
 const ChatListItem = (props) => {
-    const { classes, openDiscussion} = props;
+    const { classes, openDiscussion } = props;
     const [excerpt, setExcerpt] = useState("")
     const [partner, setPartner] = useState({})
+    const [isActive, setActive] = useState(false)
+
+
+    useEffect(() => {
+        if (props.openedChat !== ChatConstants.NO_CHAT_OPENED) {
+            const chat = props.chats.find((chat)=>chat._id === props.openedChat)
+            const isLoaded = (chat.from === partner._id) || (chat.to === partner._id)
+            setActive(isLoaded)
+        }
+    }, [props.openedChat])
+
     useEffect(() => {
         if (props.partner) {
             setExcerpt(_.last(props.messages[props.discussion]))
@@ -64,11 +76,11 @@ const ChatListItem = (props) => {
 
     return (
         <ListItem alignItems="flex-start"
-            className={classnames(classes.container, { [classes.active]: (props.openedChat === partner._id) })}
+            className={classnames(classes.container, { [classes.active]: isActive })}
             onClick={() => {
                 openDiscussion(props.discussion);
                 props.onUserSelect()
-             }}>
+            }}>
             <ListItemAvatar>
                 {<Avatar className={classes.avatar}>{partner.name ? partner.name.charAt(0).toUpperCase() : ""}</Avatar>}
             </ListItemAvatar>
@@ -91,7 +103,8 @@ const ChatListItem = (props) => {
 
 const mapStateToProps = (state) => ({
     openedChat: state.chat.opened,
-    messages: state.chat.messages
+    messages: state.chat.messages,
+    chats: state.chat.chats
 });
 const mapDispatchToProps = (dispatch) => ({
     openDiscussion: (partnerID) => dispatch(ChatActions.openChat(partnerID))

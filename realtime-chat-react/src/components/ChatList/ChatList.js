@@ -25,13 +25,12 @@ const ChatList = (props) => {
         <List className={classnames(classes.root, props.className)}>
             {
                 (chats.length > 0) ?
-                    chats.map((entry, idx) => (
+                    chats.map((chat, idx) => (
                         <ChatListItem
                             onUserSelect={props.onUserSelect}
                             key={idx}
-                            active={props.opened === entry._id}
-                            discussion={entry._id}
-                            partner={props.users[(entry.from === props.loggedUserID || entry.to === "ALL") ? entry.to : entry.from]} />
+                            discussion={chat._id}
+                            partner={props.users[(chat.from === props.loggedUserID || chat.to === "ALL") ? chat.to : chat.from]} />
                     )) :
                     <Typography>No chat started yet</Typography>
             }
