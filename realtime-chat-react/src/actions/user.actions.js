@@ -17,7 +17,7 @@ import { notificationActions } from "./notifications.actions";
  * @param {string} username 
  * @param {string} password 
  */
-const signup = (email, username, password) => {
+const signup = (email, username, password, rememberMe) => {
     const request = () => {
         return {
             type: userConstants.REGISTER_REQUEST
@@ -41,7 +41,7 @@ const signup = (email, username, password) => {
         userService.signup(email, username, password).subscribe(
             (data) => {
                 dispatch(success(data.user, data.token));
-                dispatch(login(email, password))
+                dispatch(login(email, password, rememberMe))
             },
             (error) => {
                 dispatch(failure(error.toString()));
@@ -55,7 +55,7 @@ const signup = (email, username, password) => {
  * @param {string} username 
  * @param {string} password 
  */
-const login = (username, password) => {
+const login = (username, password, rememberMe) => {
     const loginRequest = () => {
         return {
             type: userConstants.LOGIN_REQUEST
@@ -80,8 +80,10 @@ const login = (username, password) => {
 
         userService.login(username, password).subscribe(
             (data) => {
-                localStorage.setItem("user", JSON.stringify(data.user))
-                localStorage.setItem("token", JSON.stringify(data.token))
+                if (rememberMe === true) {
+                    localStorage.setItem("user", JSON.stringify(data.user))
+                    localStorage.setItem("token", JSON.stringify(data.token))
+                }
                 dispatch(loginSuccess(data.user, data.token));
                 history.push('/')
             },

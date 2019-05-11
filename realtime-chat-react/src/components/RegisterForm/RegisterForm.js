@@ -8,6 +8,8 @@ import { Typography, Grid, Input } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { UserActions } from '../../actions/user.actions';
 import { connect } from 'react-redux';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
 const styles = (theme) => {
@@ -55,6 +57,7 @@ const RegisterForm = (props) => {
     const [user, setUser] = useState("")
     const [password, setPassword] = useState("")
     const [canSubmit, setCanSubmit] = useState(false)
+    const [rememberMe, setRememberMe] = useState(true)
 
     const validateEmail = (email) => {
         const re = /^\w+([.-]?\w+)+@\w+([.:]?\w+)+(\.[a-zA-Z0-9]{2,3})+$/
@@ -75,7 +78,7 @@ const RegisterForm = (props) => {
 
     const handleSignup = () => {
         if (props.signup && (canSubmit === true)) {
-            props.signup(email, user, password)
+            props.signup(email, user, password, rememberMe)
         }
     }
 
@@ -142,6 +145,20 @@ const RegisterForm = (props) => {
                 />
             </Grid>
             <Grid item>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={rememberMe}
+                            color="primary"
+                            onChange={() => setRememberMe(!!!rememberMe)}
+                            value={rememberMe}
+                        />
+                    }
+                    label="Remember me"
+                />
+
+            </Grid>
+            <Grid item>
                 <Button
                     variant="contained"
                     color="primary"
@@ -159,7 +176,7 @@ const mapStateToProps = (state) => ({
 
 });
 const mapDispatchToProps = (dispatch) => ({
-    signup: (email, user, pass) => dispatch(UserActions.signup(email, user, pass))
+    signup: (email, user, pass, rememberMe) => dispatch(UserActions.signup(email, user, pass, rememberMe))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RegisterForm));

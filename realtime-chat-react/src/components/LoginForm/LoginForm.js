@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import LockIcon from '@material-ui/icons/Lock';
-// import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import MailIcon from '@material-ui/icons/Mail';
 import { ReactComponent as OutlinedLogo } from '../../assets/outlined_logo.svg';
 import { Typography, Grid, Input } from '@material-ui/core';
@@ -9,6 +8,8 @@ import Button from '@material-ui/core/Button';
 
 import { connect } from 'react-redux';
 import { UserActions } from '../../actions/user.actions';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
 const styles = theme => {
@@ -55,6 +56,7 @@ const LoginForm = (props) => {
     const [user, setUser] = useState("")
     const [password, setPassword] = useState("")
     const [canSubmit, setCanSubmit] = useState(false)
+    const [rememberMe, setRememberMe] = useState(true)
 
     useEffect(() => {
         setCanSubmit(user.length > 0 && password.length > 0)
@@ -62,7 +64,7 @@ const LoginForm = (props) => {
 
     const handleLogin = () => {
         if (props.login && (canSubmit === true)) {
-            props.login(user, password)
+            props.login(user, password, rememberMe)
         }
     }
 
@@ -114,6 +116,20 @@ const LoginForm = (props) => {
                 />
             </Grid>
             <Grid item>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={rememberMe}
+                            color="primary"
+                            onChange={() => setRememberMe(!!!rememberMe)}
+                            value={rememberMe}
+                        />
+                    }
+                    label="Remember me"
+                />
+
+            </Grid>
+            <Grid item>
                 <Button
                     variant="contained"
                     color="primary"
@@ -133,7 +149,7 @@ const mapStateToProps = (state) => ({
 
 });
 const mapDispatchToProps = (dispatch) => ({
-    login: (user, pass) => dispatch(UserActions.login(user, pass))
+    login: (user, pass, rememberMe) => dispatch(UserActions.login(user, pass, rememberMe))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(LoginForm));
