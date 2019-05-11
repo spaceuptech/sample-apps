@@ -1,11 +1,31 @@
+/**
+ * chat.actions.js contain all handlers dispatching actions to redux.
+ * This handler call ChatService.js before dispatching.
+ * 
+ * @author 8byr0 <https://github.com/8byr0>
+ */
+
 import { ChatService } from "../services/ChatService";
 import { ChatConstants } from "../constants/chat.constants";
 import { store } from "../helpers/store";
 import { notificationActions } from "./notifications.actions";
 import * as _ from 'lodash'
 
+
+/**
+ * Trigger init actions. 
+ * This function will start listening to chats and users.
+ */
+const loadInitialData = () => {
+    return dispatch => {
+        dispatch(listenToChats())
+        dispatch(listenToUsers())
+    }
+}
+
 /**
  * Stop all existing livequeries.
+ * Used when logging out.
  * @authenticated
  */
 const stopAllLiveQueries = () => {
@@ -39,6 +59,11 @@ const stopAllLiveQueries = () => {
     }
 }
 
+/**
+ * Dispatch an action to tell that a message has been read.
+ * This will call Chat Service to update message document in collection.
+ * @param {Object} message 
+ */
 const setMessageRead = (message) => {
     return dispatch => {
         ChatService.updateMessage({ ...message, read: true }).then(
@@ -53,10 +78,9 @@ const setMessageRead = (message) => {
     }
 }
 
-
 /**
- * Dispatch an action to reset
- * chat reducer to its initial state
+ * Dispatch an action to reset chat reducer to its initial state
+ * Used in logout.
  * @authenticated
  */
 const clearData = () => ({
@@ -67,12 +91,12 @@ const clearData = () => ({
  * Listen to messages thread of a given chat.
  * This action instantiates 2 callbacks (onMessages & onError).
  * LiveQuery object is stored in chat reducer
- * @param {Object} chat 
+ * @param {string} chatID id of the chat to listen to
  * @authenticated
  */
-const listenToThread = (discussionID) => {
+const listenToThread = (chatID) => {
     return dispatch => {
-        const currentLiveQuery = ChatService.startMessagesRealtime(discussionID).subscribe(
+        const currentLiveQuery = ChatService.startMessagesRealtime(chatID).subscribe(
             /**
              * Callback triggered on new messages in given thread
              * @param {Array<Object>} docs 
@@ -81,7 +105,7 @@ const listenToThread = (discussionID) => {
             (newMessages, type) => {
                 // TODO 8byr0 compare incoming list with existing to append only new messages
                 if (newMessages.length > 0) {
-                    dispatch({ type: ChatConstants.SET_DISCUSSION_MESSAGES, discussionID: discussionID, messages: newMessages })
+                    dispatch({ type: ChatConstants.SET_DISCUSSION_MESSAGES, chatID: chatID, messages: newMessages })
                 }
 
             },
@@ -101,15 +125,18 @@ const listenToThread = (discussionID) => {
     }
 }
 
+
 /**
- * Listen to newly created users.
+ * Listen to new users / users updates.
+ * This action instantiates 2 callbacks (onMessages & onError).
+ * LiveQuery object is stored in chat reducer
  * @authenticated
  */
 const listenToUsers = () => {
     return dispatch => {
         const newUsersListener = ChatService.startUsersRealtime().subscribe(
             /**
-             * Callback triggered on new users registered
+             * Callback triggered on new users registered / updated
              * @param {Array<Object>} docs 
              * @param {*} type 
              */
@@ -126,13 +153,13 @@ const listenToUsers = () => {
                         result : result.concat(key);
                 }, []);
 
-                newUsersKeys.forEach(key => dispatch({ type: ChatConstants.ADD_USER, user: users[key] }))
+                newUsersKeys.forEach(key => {
+                    dispatch({ type: ChatConstants.ADD_USER, user: users[key] })
+                })
             },
-
-
             /**
              * Callback triggered when something goes wrong
-             * @param {*} err
+             * @param {string} err
              */
             (error) => {
                 dispatch(notificationActions.failureMessage("An error occurred when listening to new users: " + error))
@@ -145,11 +172,14 @@ const listenToUsers = () => {
     }
 }
 
+
 /**
- * Listen to newly created discussions.
+ * Listen to active user chats.
+ * This action instantiates 2 callbacks (onMessages & onError).
+ * LiveQuery object is stored in chat reducer
  * @authenticated
  */
-const listenToDiscussions = () => {
+const listenToChats = () => {
     return dispatch => {
         const newDiscussionsListener = ChatService.startChatsRealtime().subscribe(
             /**
@@ -186,46 +216,12 @@ const listenToDiscussions = () => {
     }
 }
 
-const retrieveUsers = (launchRealTime = false) => {
-    return dispatch => {
-        if (launchRealTime === true) {
-            dispatch(listenToUsers())
-        }
-    }
-}
-const retrieveChats = (launchRealTime = false) => {
-    return dispatch => {
-        if (launchRealTime === true) {
-            dispatch(listenToDiscussions())
-        }
-    }
-}
-const retrieveMessages = () => {
-    return dispatch => {
-        // ChatService.getMessages().then(
-        //     (messages) => {
-        //         dispatch({ type: ChatConstants.SET_MESSAGES, messages })
-        //     }).catch(
-        //         (error) => {
-        //             dispatch(notificationActions.failureMessage("An error occurred when retrieving messages: " + error))
-        //         }
-        //     )
-    }
-}
-
-const loadInitialData = () => {
-    return dispatch => {
-        dispatch(retrieveChats(true));
-        dispatch(retrieveUsers(true));
-        dispatch(retrieveMessages());
-    }
-}
 
 /**
- * Set the active chat of the app
+ * Set the active chat of the app (the one opened on the right)
  * @param {string} partnerID 
  */
-const openDiscussion = (discussionID) => {
+const openChat = (discussionID) => {
     return dispatch => {
         dispatch({ type: ChatConstants.OPEN_DISCUSSION_REQUEST });
 
@@ -238,14 +234,14 @@ const openDiscussion = (discussionID) => {
 
 /**
  * Send a new message
- * @param {string} partnerID id of the partner
+ * @param {string} chatID id of the chat
  * @param {string} text text of the message
  */
-const sendMessage = (discussionID, text) => {
+const sendMessage = (chatID, text) => {
     return dispatch => {
         dispatch({ type: ChatConstants.SEND_MESSAGE_REQUEST });
         // Call chat service function
-        ChatService.sendMessage(discussionID, text).then(
+        ChatService.sendMessage(chatID, text).then(
             res => {
                 dispatch({ type: ChatConstants.SEND_MESSAGE_SUCCESS });
             }).catch(
@@ -262,23 +258,25 @@ const sendMessage = (discussionID, text) => {
 }
 
 /**
- * Send a new message
+ * Create a new chat with given partner.
+ * If a chat already exists with this partner, it will be opened on the right of UI. 
+ * Otherwise, a chat creation request is sent to Space-Cloud
  * @param {string} partnerID id of the partner
  */
 const startChatWith = (partnerID) => {
     return dispatch => {
-        const existingDiscussionsWithPartner = store.getState().chat.chats.filter((chat) => chat.from === partnerID || chat.to === partnerID)
+        const existingChatWithPartner = store.getState().chat.chats.filter((chat) => chat.from === partnerID || chat.to === partnerID)
 
-        if (existingDiscussionsWithPartner.length > 0) {
+        if (existingChatWithPartner.length > 0) {
             // Well, there is already a discussion with our pal, let's open it
-            dispatch(openDiscussion(existingDiscussionsWithPartner[0]._id));
+            dispatch(openChat(existingChatWithPartner[0]._id));
         } else {
 
             dispatch({ type: ChatConstants.START_CHAT_REQUEST });
             // Call chat service function
             ChatService.createChat(partnerID).then(
                 (chat) => {
-                    dispatch(openDiscussion(chat._id))
+                    dispatch(openChat(chat._id))
                 }).catch(
                     (error) => {
                         // In case of error dispatch an FAILURE notice
@@ -296,7 +294,7 @@ const startChatWith = (partnerID) => {
 export const ChatActions = {
     setMessageRead,
     loadInitialData,
-    openDiscussion,
+    openChat,
     sendMessage,
     stopAllLiveQueries,
     clearData,

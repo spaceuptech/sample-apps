@@ -1,15 +1,17 @@
-import {
-    userService
-} from "../services/UserService";
-import {
-    userConstants
-} from "../constants/user.constants";
-import {
-    history,
-} from '../helpers';
+/**
+ * user.actions.js contain all handlers dispatching actions to redux.
+ * This handler call UserService.js before dispatching.
+ * 
+ * @author 8byr0 <https://github.com/8byr0>
+ */
+
+import { userService } from "../services/UserService";
+import { userConstants } from "../constants/user.constants";
+import { history } from '../helpers';
 import { ChatActions } from "./chat.actions";
 import { store } from '../helpers/store'
 import { notificationActions } from "./notifications.actions";
+
 /**
  * SignUp to space-cloud API using identifiers.
  * This action will trigger a login on success.
@@ -38,15 +40,15 @@ const signup = (email, username, password, rememberMe) => {
     return dispatch => {
         dispatch(request());
 
-        userService.signup(email, username, password).subscribe(
+        userService.signup(email, username, password).then(
             (data) => {
                 dispatch(success(data.user, data.token));
                 dispatch(login(email, password, rememberMe))
-            },
-            (error) => {
-                dispatch(failure(error.toString()));
-            }
-        );
+            }).catch(
+                (error) => {
+                    dispatch(failure(error.toString()));
+                }
+            );
     };
 }
 
@@ -78,7 +80,7 @@ const login = (username, password, rememberMe) => {
     return dispatch => {
         dispatch(loginRequest());
 
-        userService.login(username, password).subscribe(
+        userService.login(username, password).then(
             (data) => {
                 if (rememberMe === true) {
                     localStorage.setItem("user", JSON.stringify(data.user))
@@ -86,11 +88,11 @@ const login = (username, password, rememberMe) => {
                 }
                 dispatch(loginSuccess(data.user, data.token));
                 history.push('/')
-            },
-            (error) => {
-                dispatch(loginFailure(error.toString()));
-            }
-        );
+            }).catch(
+                (error) => {
+                    dispatch(loginFailure(error.toString()));
+                }
+            );
     };
 }
 
