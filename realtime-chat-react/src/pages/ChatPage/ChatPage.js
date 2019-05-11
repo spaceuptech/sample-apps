@@ -44,20 +44,6 @@ const styles = theme => {
         },
         spanText: {
             color: '#BDBDBD'
-        },
-        chatList: {
-            overflow: 'auto',
-            [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-                height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
-            },
-            [theme.breakpoints.up('sm')]: {
-                height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
-            },
-        },
-        newMessageFab: {
-            position: 'absolute',
-            right: "10px",
-            bottom: "10px",
         }
     }
 };

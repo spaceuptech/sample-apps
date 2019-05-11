@@ -13,15 +13,8 @@ const styles = theme => ({
     chat: {
         width: '100%',
         background: '#F5F5F5',
-        // backgroundColor: theme.palette.background.paper,
-        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-            minHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
-            maxHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
-        },
-        [theme.breakpoints.up('sm')]: {
-            minHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
-            maxHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
-        },
+        minHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
+        maxHeight: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
         display: 'flex',
         flexFlow: 'column',
     },
@@ -32,12 +25,7 @@ const styles = theme => ({
     root: {
         background: '#F5F5F5',
         backgroundColor: theme.palette.background.paper,
-        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-            height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
-        },
-        [theme.breakpoints.up('sm')]: {
-            height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
-        },
+        height: `calc(100% - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
         flexGrow: 1
     },
     sendBox: {
@@ -58,7 +46,7 @@ const Chat = (props) => {
         <div className={classes.root}>
             <ChatHeader user={partner} />
             <Grid className={classes.chat}>
-                <ChatDiscussion messages={props.messages[discussionID]} partner={partner} className={classes.discussion}/>
+                <ChatDiscussion messages={props.messages[discussionID]} partner={partner} className={classes.discussion} />
                 <ChatSend item className={classes.sendBox}
                     onSubmit={text => sendMessage(discussionID, text)} />
             </Grid>
