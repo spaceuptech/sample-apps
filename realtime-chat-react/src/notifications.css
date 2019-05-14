@@ -1,0 +1,19 @@
+.customContent {
+    color: #fff;
+    font-weight:normal;
+}
+.containerTopCenter {
+    z-index: 1;
+    position: fixed;
+    overflow-y: auto;
+    max-height: 100vh;
+    left: 50%;
+    transform: translate3d(-50%, 0, 0);
+    flex-direction: column;
+    top: 0;
+    color: #fff;
+}
+
+.containerTopCenter::-webkit-scrollbar {
+    display: none;
+}
