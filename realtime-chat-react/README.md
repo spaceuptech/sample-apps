@@ -8,7 +8,7 @@ git clone https://github.com/spaceuptech/sample-apps.git
 ```
 
 ## Start space-cloud
-`config.yaml` is configured to reach a MongoDB instance on `localhost:27017`. 
+You'd first have to download and setup [space-cloud](https://github.com/spaceuptech/space-cloud). The `config.yaml` is configured to reach a MongoDB instance on `localhost:27017`. 
 If you want to use another instance, open `config.yaml` and edit the following line:
 ```yaml
 # ...
